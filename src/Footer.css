@@ -1,0 +1,152 @@
+.site-footer {
+	--footer-ink: #0f172a;
+	--footer-muted: #475569;
+	--footer-soft: #94a3b8;
+	--footer-border: #cbd5e1;
+	--footer-brand: #0d7377;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 48px 64px 28px;
+	color: var(--footer-muted);
+	background: #f8fafc;
+	text-align: left;
+	font-family: "Nunito Sans", "Segoe UI", sans-serif;
+}
+
+.footer-main,
+.footer-bottom {
+	max-width: 1120px;
+	margin: 0 auto;
+}
+
+.footer-main {
+	display: flex;
+	justify-content: space-between;
+	gap: 48px;
+	padding-bottom: 34px;
+}
+
+.footer-brand {
+	max-width: 365px;
+}
+
+.footer-logo {
+	display: inline-block;
+	margin-bottom: 10px;
+	color: var(--footer-brand);
+	font-size: 20px;
+	font-weight: 800;
+	line-height: 1.25;
+	text-decoration: none;
+}
+
+.footer-brand p {
+	max-width: 350px;
+	color: var(--footer-muted);
+	font-size: 15px;
+	line-height: 1.42;
+}
+
+.footer-nav {
+	display: flex;
+	gap: 72px;
+	min-width: 320px;
+}
+
+.footer-nav-group {
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+	min-width: 108px;
+}
+
+.footer-nav h2 {
+	margin: 0 0 2px;
+	color: var(--footer-ink);
+	font-size: 14px;
+	font-weight: 800;
+	line-height: 1.2;
+}
+
+.footer-nav a,
+.footer-legal a {
+	color: var(--footer-muted);
+	font-size: 14px;
+	line-height: 1.25;
+	text-decoration: none;
+	transition: color 160ms ease;
+}
+
+.footer-nav a:hover,
+.footer-legal a:hover,
+.footer-logo:hover {
+	color: var(--footer-brand);
+}
+
+.footer-nav a:focus-visible,
+.footer-legal a:focus-visible,
+.footer-logo:focus-visible {
+	outline: 2px solid var(--footer-brand);
+	outline-offset: 4px;
+}
+
+.footer-bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	padding-top: 30px;
+	border-top: 1px solid var(--footer-border);
+}
+
+.footer-bottom p,
+.footer-legal {
+	color: var(--footer-soft);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.footer-legal {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 6px;
+}
+
+.footer-legal a {
+	color: var(--footer-soft);
+	font-size: inherit;
+}
+
+@media (max-width: 700px) {
+	.site-footer {
+		padding: 36px 24px 24px;
+	}
+
+	.footer-main,
+	.footer-bottom {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.footer-main {
+		gap: 32px;
+	}
+
+	.footer-nav {
+		gap: 40px;
+		min-width: 0;
+	}
+
+	.footer-bottom {
+		gap: 16px;
+	}
+
+	.footer-bottom p {
+		max-width: 420px;
+	}
+
+	.footer-legal {
+		justify-content: flex-start;
+	}
+}
