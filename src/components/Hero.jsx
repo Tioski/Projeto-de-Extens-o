@@ -1,45 +1,34 @@
-import './Hero.css';
+import './Hero.css'
 
-function HeroSection() {
+function HeroSection({ onNavigate = () => {} }) {
   return (
     <section className="hero-section">
-      <div className="hero-container">
-
+      <div className="container hero-container">
         <div className="hero-content">
-          <h1>
-            Agende seu exame de forma
-            <br />
-            rápida e simples
-          </h1>
-
+          <span className="eyebrow">Atendimento humanizado</span>
+          <h1>Agende seu exame simples e seguro.</h1>
           <p>
-            No Hospital Santa Cruz de Canoinhas, sua saúde é nossa prioridade.
-            Acesse<br />
-            seu portal, escolha o exame desejado e agende sem filas ou burocracia.
+            Acesse o portal do Hospital Santa Cruz de Canoinhas e agende sua avaliação com praticidade,
+            rapidez e segurança.
           </p>
 
-          <div className="hero-buttons">
-            <button className="btn-primary">
+          <div className="hero-actions">
+            <button type="button" className="btn btn-primary btn-large" onClick={() => onNavigate('novo-exame')}>
               Agendar Exame
-              <span>→</span>
+              <span aria-hidden="true">→</span>
             </button>
-
-            <button className="btn-secondary">
-              Meus Agendamentos
+            <button type="button" className="btn btn-secondary btn-large" onClick={() => onNavigate('consultar-exames')}>
+              Consultar Exames
             </button>
           </div>
         </div>
 
-        <div className="hero-image">
-          <img
-            src="/hospital.png"
-            alt="Atendimento no Hospital Santa Cruz de Canoinhas"
-          />
+        <div className="hero-visual" aria-label="Ilustração institucional do hospital">
+          <img src="/hospital.png" alt="Atendimento no Hospital Santa Cruz de Canoinhas" />
         </div>
-
       </div>
     </section>
-  );
+  )
 }
 
-export default HeroSection;
+export default HeroSection

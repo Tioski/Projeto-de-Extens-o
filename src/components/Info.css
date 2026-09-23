@@ -1,129 +1,46 @@
 .info-section {
-  width: 100%;
-
-  background-color: #f5f7f9;
-
-  padding: 38px 20px 46px;
-
-  box-sizing: border-box;
+  padding: 5rem 0;
+  background: var(--color-slate-100);
 }
 
-.info-container {
-  max-width: 1200px;
-
-  margin: 0 auto;
-}
-
-/* =========================
-   TÍTULO
-   ========================= */
-
-.info-container h2 {
-  margin: 0 0 20px;
-
-  text-align: center;
-
-  color: #172033;
-
-  font-size: 16px;
-  font-weight: 700;
-}
-
-/* =========================
-   CARDS
-   ========================= */
-
-.info-cards {
+.info-grid {
   display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
 }
-
-/* =========================
-   CARD
-   ========================= */
 
 .info-card {
-  min-height: 104px;
-
-  padding: 17px 15px;
-
-  background-color: #ffffff;
-
-  border-radius: 8px;
-
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 220px;
+  padding: 1.5rem;
 }
-
-/* =========================
-   ÍCONE
-   ========================= */
 
 .info-icon {
-  width: 24px;
-  height: 24px;
-
-  margin-bottom: 9px;
-
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
+  width: 2.8rem;
+  height: 2.8rem;
   border-radius: 50%;
-
-  background-color: #eef9fa;
-
-  color: #087f83;
-
-  font-size: 14px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
-
-/* =========================
-   TÍTULO DO CARD
-   ========================= */
 
 .info-card h3 {
-  margin: 0 0 7px;
-
-  color: #172033;
-
-  font-size: 10px;
-  font-weight: 700;
+  margin: 0;
 }
-
-/* =========================
-   TEXTO
-   ========================= */
 
 .info-card p {
-  margin: 0;
-
-  color: #667085;
-
-  font-size: 8px;
-  line-height: 1.6;
+  color: var(--color-slate-600);
+  line-height: 1.7;
 }
 
-.info-card strong {
-  color: #087f83;
-
-  font-weight: 700;
-}
-
-/* =========================
-   RESPONSIVIDADE
-   ========================= */
-
-@media (max-width: 768px) {
-  .info-cards {
+@media (max-width: 720px) {
+  .info-grid {
     grid-template-columns: 1fr;
-  }
-
-  .info-section {
-    padding: 30px 20px;
   }
 }

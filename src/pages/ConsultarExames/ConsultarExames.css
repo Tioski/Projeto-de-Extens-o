@@ -1,0 +1,88 @@
+.consult-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.search-panel {
+  padding: 1.2rem 1.25rem;
+}
+
+.search-wrap {
+  gap: 0.6rem;
+}
+
+.search-wrap span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-slate-700);
+}
+
+.exam-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.exam-card {
+  padding: 1.25rem 1.4rem;
+}
+
+.exam-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.exam-header h3 {
+  margin-bottom: 0.2rem;
+}
+
+.exam-header p {
+  color: var(--color-slate-600);
+}
+
+.exam-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.exam-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--color-slate-100);
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+}
+
+.exam-meta span {
+  font-size: 0.72rem;
+  color: var(--color-slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.exam-meta strong {
+  color: var(--color-slate-900);
+}
+
+.exam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .exam-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .exam-header {
+    flex-direction: column;
+  }
+}
