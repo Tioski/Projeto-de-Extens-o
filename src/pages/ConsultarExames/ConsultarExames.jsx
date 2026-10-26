@@ -1,13 +1,35 @@
+import { useState } from 'react'
 import './ConsultarExames.css'
-
-const exames = [
-  { nome: 'Exame de Sangue Completo', data: '20/09/2026', horario: '09:30', status: 'Confirmado', local: 'Unidade Central' },
-  { nome: 'Ultrassonografia Abdominal', data: '22/09/2026', horario: '14:10', status: 'Pendente', local: 'Imagem Diagnóstica' },
-  { nome: 'Raio-X de Tórax', data: '24/09/2026', horario: '11:00', status: 'Em Atendimento', local: 'Radiologia' },
-  { nome: 'Ecocardiograma', data: '26/09/2026', horario: '16:45', status: 'Concluído', local: 'Cardiologia' },
-]
+import { agendamentoApi } from '../../services/api'
+import { useAgendamentos } from '../../hooks/useAgendamentos'
+import { formatarData, formatarDataHora, formatarHora, infoStatus } from '../../utils/agendamento'
 
 function ConsultarExamesPage({ onNavigate = () => {} }) {
+  const { agendamentos, nomeDoExame, carregando, erro, recarregar } = useAgendamentos()
+  const [busca, setBusca] = useState('')
+  const [cancelando, setCancelando] = useState(null)
+  const [erroAcao, setErroAcao] = useState('')
+
+  const termo = busca.trim().toLowerCase()
+  const lista = agendamentos
+    .filter((a) => nomeDoExame(a.examePublicId).toLowerCase().includes(termo))
+    .sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao))
+
+  const handleCancelar = async (publicId) => {
+    if (!window.confirm('Deseja realmente cancelar este agendamento?')) return
+
+    setErroAcao('')
+    setCancelando(publicId)
+    try {
+      await agendamentoApi.cancelar(publicId)
+      await recarregar()
+    } catch (e) {
+      setErroAcao(e.message)
+    } finally {
+      setCancelando(null)
+    }
+  }
+
   return (
     <div className="page-shell">
       <div className="container page-section consult-section">
@@ -19,42 +41,69 @@ function ConsultarExamesPage({ onNavigate = () => {} }) {
         <div className="search-panel card">
           <label className="field search-wrap" htmlFor="buscar-exame">
             <span>Buscar exame</span>
-            <input id="buscar-exame" className="search-input" type="text" placeholder="Digite o nome do exame" />
+            <input
+              id="buscar-exame"
+              className="search-input"
+              type="text"
+              placeholder="Digite o nome do exame"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
           </label>
         </div>
 
+        {erro && <div className="alert alert-error" role="alert">{erro}</div>}
+        {erroAcao && <div className="alert alert-error" role="alert">{erroAcao}</div>}
+        {carregando && <p className="muted-text">Carregando agendamentos...</p>}
+        {!carregando && !erro && lista.length === 0 && (
+          <p className="muted-text">Nenhum agendamento encontrado.</p>
+        )}
+
         <div className="exam-list">
-          {exames.map((exame) => (
-            <article key={`${exame.nome}-${exame.data}`} className="card exam-card">
-              <div className="exam-header">
-                <div>
-                  <h3>{exame.nome}</h3>
-                  <p>{exame.local}</p>
+          {lista.map((a) => {
+            const status = infoStatus(a.status)
+            const podeCancelar = a.status === 'PENDENTE' || a.status === 'CONFIRMADO'
+
+            return (
+              <article key={a.publicId} className="card exam-card">
+                <div className="exam-header">
+                  <div>
+                    <h3>{nomeDoExame(a.examePublicId)}</h3>
+                    <p>Solicitado em {formatarDataHora(a.dataCriacao)}</p>
+                  </div>
+                  <span className={`status-badge ${status.classe}`}>{status.label}</span>
                 </div>
-                <span className={`status-badge ${
-                  exame.status === 'Confirmado' ? 'status-confirmado' :
-                  exame.status === 'Pendente' ? 'status-pendente' :
-                  exame.status === 'Em Atendimento' ? 'status-atendimento' :
-                  exame.status === 'Concluído' ? 'status-concluido' : 'status-cancelado'
-                }`}>{exame.status}</span>
-              </div>
 
-              <div className="exam-meta">
-                <div><span>Data</span><strong>{exame.data}</strong></div>
-                <div><span>Horário</span><strong>{exame.horario}</strong></div>
-                <div><span>Local</span><strong>{exame.local}</strong></div>
-              </div>
+                <div className="exam-meta">
+                  <div><span>Data</span><strong>{a.dataConfirmada ? formatarData(a.dataConfirmada) : 'A definir'}</strong></div>
+                  <div><span>Horário</span><strong>{a.dataConfirmada ? formatarHora(a.dataConfirmada) : '—'}</strong></div>
+                </div>
 
-              <div className="exam-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => onNavigate('novo-exame')}>
-                  Agendar novamente
-                </button>
-                <button type="button" className="btn btn-primary" onClick={() => onNavigate('painel')}>
-                  Detalhes
-                </button>
-              </div>
-            </article>
-          ))}
+                {a.status === 'PENDENTE' && (
+                  <p className="muted-text">
+                    Datas sugeridas: {[a.dataOpcao1, a.dataOpcao2, a.dataOpcao3].map(formatarDataHora).join(' • ')}
+                  </p>
+                )}
+                {a.observacao && <p className="muted-text">Observação: {a.observacao}</p>}
+
+                <div className="exam-actions">
+                  <button type="button" className="btn btn-secondary" onClick={() => onNavigate('novo-exame')}>
+                    Agendar novamente
+                  </button>
+                  {podeCancelar && (
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      disabled={cancelando === a.publicId}
+                      onClick={() => handleCancelar(a.publicId)}
+                    >
+                      {cancelando === a.publicId ? 'Cancelando...' : 'Cancelar'}
+                    </button>
+                  )}
+                </div>
+              </article>
+            )
+          })}
         </div>
       </div>
     </div>

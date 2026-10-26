@@ -1,18 +1,25 @@
 import './Painel.css'
+import { useAgendamentos } from '../../hooks/useAgendamentos'
+import { dataDeReferencia, formatarDataHora, infoStatus } from '../../utils/agendamento'
 
-const resumo = [
-  { label: 'Agendamentos', value: '08', detail: 'Este mês' },
-  { label: 'Pendentes', value: '02', detail: 'Aguardando confirmação' },
-  { label: 'Concluídos', value: '05', detail: 'Últimos 30 dias' },
-]
-
-const agendamentos = [
-  { nome: 'Raio-X de tórax', data: '20/09 • 09:30', status: 'Confirmado' },
-  { nome: 'Hemograma completo', data: '22/09 • 14:00', status: 'Pendente' },
-  { nome: 'Ultrassonografia abdominal', data: '24/09 • 10:15', status: 'Em Atendimento' },
-]
+const doisDigitos = (n) => String(n).padStart(2, '0')
 
 function PainelPage({ onNavigate = () => {} }) {
+  const { agendamentos, nomeDoExame, carregando, erro } = useAgendamentos()
+
+  const contar = (status) => agendamentos.filter((a) => a.status === status).length
+
+  const resumo = [
+    { label: 'Agendamentos', value: doisDigitos(agendamentos.length), detail: 'Total solicitado' },
+    { label: 'Pendentes', value: doisDigitos(contar('PENDENTE')), detail: 'Aguardando confirmação' },
+    { label: 'Concluídos', value: doisDigitos(contar('CONCLUIDO')), detail: 'Atendimentos realizados' },
+  ]
+
+  const proximos = agendamentos
+    .filter((a) => a.status === 'PENDENTE' || a.status === 'CONFIRMADO')
+    .sort((a, b) => dataDeReferencia(a) - dataDeReferencia(b))
+    .slice(0, 5)
+
   return (
     <div className="page-shell">
       <div className="container page-section">
@@ -21,11 +28,13 @@ function PainelPage({ onNavigate = () => {} }) {
           <p>Acompanhe seus exames, prazos e próximos atendimentos em um só lugar.</p>
         </div>
 
+        {erro && <div className="alert alert-error" role="alert">{erro}</div>}
+
         <div className="summary-grid">
           {resumo.map((item) => (
             <article key={item.label} className="card summary-card">
               <span className="summary-label">{item.label}</span>
-              <strong>{item.value}</strong>
+              <strong>{carregando ? '--' : item.value}</strong>
               <small>{item.detail}</small>
             </article>
           ))}
@@ -34,19 +43,23 @@ function PainelPage({ onNavigate = () => {} }) {
         <div className="dashboard-grid dashboard-layout">
           <section className="card panel-card">
             <h3>Próximos exames</h3>
+            {carregando && <p className="muted-text">Carregando agendamentos...</p>}
+            {!carregando && !erro && proximos.length === 0 && (
+              <p className="muted-text">Você ainda não tem exames pendentes ou confirmados.</p>
+            )}
             <div className="card-list">
-              {agendamentos.map((item) => (
-                <div key={item.nome} className="list-item">
-                  <div>
-                    <strong>{item.nome}</strong>
-                    <p>{item.data}</p>
+              {proximos.map((a) => {
+                const status = infoStatus(a.status)
+                return (
+                  <div key={a.publicId} className="list-item">
+                    <div>
+                      <strong>{nomeDoExame(a.examePublicId)}</strong>
+                      <p>{a.status === 'CONFIRMADO' ? formatarDataHora(a.dataConfirmada) : 'Aguardando confirmação da recepção'}</p>
+                    </div>
+                    <span className={`status-badge ${status.classe}`}>{status.label}</span>
                   </div>
-                  <span className={`status-badge ${
-                    item.status === 'Confirmado' ? 'status-confirmado' :
-                    item.status === 'Pendente' ? 'status-pendente' : 'status-atendimento'
-                  }`}>{item.status}</span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
 

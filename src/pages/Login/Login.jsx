@@ -1,6 +1,33 @@
+import { useState } from 'react'
 import './Login.css'
+import { authApi } from '../../services/api'
 
-function LoginPage({ onNavigate = () => {} }) {
+function LoginPage({ onNavigate = () => {}, onLogin = () => {} }) {
+  const [login, setLogin] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState('')
+  const [enviando, setEnviando] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setErro('')
+    setEnviando(true)
+
+    try {
+      // O backend aceita e-mail ou CPF (só dígitos) no mesmo campo.
+      const valor = login.trim()
+      const digitos = valor.replace(/\D/g, '')
+      const loginEnviado = !valor.includes('@') && digitos.length === 11 ? digitos : valor
+
+      const dados = await authApi.login(loginEnviado, senha)
+      onLogin(dados)
+    } catch (e) {
+      setErro(e.message)
+    } finally {
+      setEnviando(false)
+    }
+  }
+
   return (
     <div className="page-shell auth-page">
       <div className="container auth-layout">
@@ -10,19 +37,37 @@ function LoginPage({ onNavigate = () => {} }) {
             <h1 id="login-title">Entrar</h1>
           </div>
 
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="field">
-              <label htmlFor="email">E-mail</label>
-              <input id="email" type="email" placeholder="seuemail@exemplo.com" />
+              <label htmlFor="login">E-mail ou CPF</label>
+              <input
+                id="login"
+                type="text"
+                autoComplete="username"
+                placeholder="seuemail@exemplo.com"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+                required
+              />
             </div>
 
             <div className="field">
               <label htmlFor="senha">Senha</label>
-              <input id="senha" type="password" placeholder="Digite sua senha" />
+              <input
+                id="senha"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Digite sua senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+              />
             </div>
 
-            <button type="button" className="btn btn-primary btn-large auth-submit" onClick={() => onNavigate('painel')}>
-              Entrar
+            {erro && <div className="alert alert-error" role="alert">{erro}</div>}
+
+            <button type="submit" className="btn btn-primary btn-large auth-submit" disabled={enviando}>
+              {enviando ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 

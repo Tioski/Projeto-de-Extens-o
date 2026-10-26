@@ -1,6 +1,6 @@
 import './Header.css'
 
-function Header({ currentPage = 'home', onNavigate = () => {} }) {
+function Header({ currentPage = 'home', onNavigate = () => {}, session = null, onLogout = () => {} }) {
   const navItems = [
     { label: 'Início', key: 'home' },
     { label: 'Agendar Exame', key: 'novo-exame' },
@@ -32,9 +32,20 @@ function Header({ currentPage = 'home', onNavigate = () => {} }) {
             Ajuda
           </button>
 
-          <button type="button" className="btn btn-secondary btn-small header-login" onClick={() => onNavigate('login')}>
-            Entrar
-          </button>
+          {session ? (
+            <button
+              type="button"
+              className="btn btn-secondary btn-small header-login"
+              onClick={onLogout}
+              title={`Conectado como ${session.nome}`}
+            >
+              Sair
+            </button>
+          ) : (
+            <button type="button" className="btn btn-secondary btn-small header-login" onClick={() => onNavigate('login')}>
+              Entrar
+            </button>
+          )}
         </nav>
       </div>
     </header>
