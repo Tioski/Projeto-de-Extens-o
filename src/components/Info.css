@@ -1,0 +1,46 @@
+.info-section {
+  padding: 5rem 0;
+  background: var(--color-slate-100);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 220px;
+  padding: 1.5rem;
+}
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.info-card h3 {
+  margin: 0;
+}
+
+.info-card p {
+  color: var(--color-slate-600);
+  line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

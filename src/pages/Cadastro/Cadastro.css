@@ -1,0 +1,26 @@
+.auth-card {
+  width: min(100%, 720px);
+}
+
+.auth-form.form-grid-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 620px) {
+  .auth-form.form-grid-two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--color-slate-600);
+}
+
+.field-hint-ok {
+  color: var(--color-success);
+}
+
+.field-hint-erro {
+  color: var(--color-error);
+}

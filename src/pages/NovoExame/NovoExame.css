@@ -1,0 +1,108 @@
+.novo-exame-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.progress-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  color: var(--color-slate-600);
+}
+
+.step span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: var(--color-slate-200);
+  color: var(--color-slate-600);
+  font-weight: 700;
+}
+
+.step.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.step.active span {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.step small {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.novo-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.option-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.option-button {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-slate-100);
+  text-align: left;
+  color: var(--color-slate-800);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.option-button.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.confirmation-summary {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.confirmation-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--color-slate-100);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-slate-200);
+}
+
+.confirmation-summary span {
+  color: var(--color-slate-600);
+}
+
+.confirmation-summary strong {
+  color: var(--color-slate-900);
+}
+
+@media (max-width: 760px) {
+  .progress-steps,
+  .novo-grid {
+    grid-template-columns: 1fr;
+  }
+}

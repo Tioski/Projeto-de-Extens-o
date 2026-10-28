@@ -1,0 +1,103 @@
+# Sistema de Pré-Agendamento de Exames
+
+Projeto desenvolvido para o Projeto de Extensão do curso de Análise e Desenvolvimento de Sistemas (ADS) do IFSC – Campus Canoinhas.
+
+O sistema tem como objetivo permitir que pacientes realizem uma solicitação de pré-agendamento de exames de forma digital, facilitando o processo de escolha do exame, data e horário, além de permitir o acompanhamento das solicitações.
+
+---
+
+## 📌 Sobre o Projeto
+
+O sistema está sendo desenvolvido a partir das necessidades identificadas junto ao Hospital de Canoinhas.
+
+A proposta consiste em disponibilizar uma plataforma na qual o paciente possa:
+
+- Criar uma conta;
+- Realizar login;
+- Acessar seu painel;
+- Solicitar um novo exame;
+- Selecionar o exame desejado;
+- Escolher uma data disponível;
+- Selecionar um horário;
+- Informar ou confirmar seus dados pessoais;
+- Revisar os dados da solicitação;
+- Confirmar a solicitação de pré-agendamento;
+- Consultar seus exames e solicitações anteriores.
+
+O sistema também deverá permitir que a equipe responsável pelo hospital tenha maior controle sobre as solicitações recebidas.
+
+---
+
+## 🚀 Tecnologias
+
+### Front-end
+
+- React
+- JavaScript
+- HTML
+- CSS
+- Vite
+
+### Back-end
+
+O back-end será desenvolvido utilizando:
+
+- Java
+- Spring Boot
+
+### Banco de Dados
+
+- PostgreSQL
+- Neon
+- DBeaver
+
+---
+
+## 📁 Estrutura do Projeto
+
+A estrutura do front-end está organizada da seguinte maneira:
+
+```text
+src/
+│
+├── assets/
+│
+├── components/
+│   ├── Header/
+│   ├── Footer/
+│   ├── Button/
+│   ├── Input/
+│   ├── Card/
+│   └── ...
+│
+├── pages/
+│   ├── Home/
+│   │   └── Home.jsx
+│   │
+│   ├── Login/
+│   │   └── Login.jsx
+│   │
+│   ├── Cadastro/
+│   │   └── Cadastro.jsx
+│   │
+│   ├── Painel/
+│   │   └── Painel.jsx
+│   │
+│   ├── NovoExame/
+│   │   ├── NovoExame.jsx
+│   │   │
+│   │   └── etapas/
+│   │       ├── SelecionarExame.jsx
+│   │       ├── SelecionarData.jsx
+│   │       ├── SelecionarHorario.jsx
+│   │       ├── InformacoesPessoais.jsx
+│   │       ├── Revisao.jsx
+│   │       └── Confirmacao.jsx
+│   │
+│   └── ConsultarExames/
+│       └── ConsultarExames.jsx
+│
+├── App.jsx
+├── App.css
+├── index.css
+└── main.jsx
