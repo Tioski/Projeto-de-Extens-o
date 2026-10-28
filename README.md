@@ -1,10 +1,6 @@
 # Sistema de Pré-Agendamento de Exames
 
-Projeto desenvolvido para o Projeto de Extensão do curso de Análise e Desenvolvimento de Sistemas (ADS) do IFSC – Campus Canoinhas.
-
 O sistema permite que pacientes solicitem o pré-agendamento de exames de forma digital — escolhendo o exame, o paciente e três opções de data e horário — e acompanhem o andamento das solicitações. A equipe do hospital confirma uma das datas sugeridas.
-
-> Este repositório contém o **front-end**. O back-end (API REST em Spring Boot) fica em um repositório separado: [`Sistema-de-Agendamento`](https://github.com/Lucas-Eduardo-Karvat/Sistema-de-Agendamento). Para rodar o sistema completo você precisa dos dois — veja [Como executar](#-como-executar).
 
 ---
 
