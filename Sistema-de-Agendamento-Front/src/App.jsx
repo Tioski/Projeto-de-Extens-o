@@ -36,6 +36,8 @@ function App() {
   const [destino, setDestino] = useState(null)
   // Dados extras para a página aberta (ex.: exame a reagendar). Zera a cada navegação.
   const [paramsPagina, setParamsPagina] = useState(null)
+  // Muda a cada abertura de "Novo exame": o assistente recomeça da etapa certa em vez de manter o estado antigo.
+  const [aberturaNovoExame, setAberturaNovoExame] = useState(0)
 
   // O wrapper de requisições dispara "auth:expired" quando o backend responde 401.
   useEffect(() => {
@@ -63,6 +65,7 @@ function App() {
     }
     if (pagina !== 'login' && pagina !== 'cadastro') setDestino(null)
     setParamsPagina(params)
+    if (pagina === 'novo-exame') setAberturaNovoExame((n) => n + 1)
     setCurrentPage(pagina)
   }
 
@@ -93,7 +96,7 @@ function App() {
       case 'consultar-exames':
         return <ConsultarExamesPage onNavigate={navegar} />
       case 'novo-exame':
-        return <NovoExamePage onNavigate={navegar} params={paramsPagina} />
+        return <NovoExamePage key={aberturaNovoExame} onNavigate={navegar} params={paramsPagina} />
       case 'recepcao':
         return <AdminDashboardPage {...propsAdmin} />
       case 'recepcao-agendamentos':

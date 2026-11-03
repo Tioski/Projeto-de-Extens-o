@@ -9,6 +9,7 @@ import {
   formatarHora,
   infoStatus,
 } from '../../utils/agendamento'
+import { datasSugeridas } from '../../utils/datas'
 
 function ConsultarExamesPage({ onNavigate = () => {} }) {
   const { agendamentos, nomeDoExame, pacienteDoAgendamento, carregando, erro, recarregar } = useAgendamentos()
@@ -94,7 +95,7 @@ function ConsultarExamesPage({ onNavigate = () => {} }) {
 
                 {a.status === 'PENDENTE' && (
                   <p className="muted-text">
-                    Datas sugeridas: {[a.dataOpcao1, a.dataOpcao2, a.dataOpcao3].map(formatarDataHora).join(' • ')}
+                    {datasSugeridas(a).length > 1 ? 'Datas sugeridas' : 'Data sugerida'}: {datasSugeridas(a).map(formatarDataHora).join(' • ')}
                   </p>
                 )}
                 {a.observacao && <p className="muted-text">Observação: {a.observacao}</p>}

@@ -27,12 +27,15 @@ export function somenteDigitos(valor = '') {
   return valor.replace(/\D/g, '')
 }
 
-// Timestamp usado para ordenar: data confirmada ou, se ainda pendente, a mais próxima das 3 opções.
+// Timestamp usado para ordenar: data confirmada ou, se ainda pendente, a mais próxima das opções informadas.
 export function dataDeReferencia(agendamento) {
   if (agendamento.dataConfirmada) return new Date(agendamento.dataConfirmada).getTime()
-  return Math.min(
-    ...[agendamento.dataOpcao1, agendamento.dataOpcao2, agendamento.dataOpcao3].map((d) => new Date(d).getTime()),
-  )
+  // Opções vazias (null) são ignoradas: new Date(null) seria 1970 e viraria a "menor" data.
+  const instantes = [agendamento.dataOpcao1, agendamento.dataOpcao2, agendamento.dataOpcao3]
+    .filter(Boolean)
+    .map((d) => new Date(d).getTime())
+    .filter((t) => !Number.isNaN(t))
+  return instantes.length ? Math.min(...instantes) : Infinity
 }
 
 // Valor mínimo para <input type="datetime-local"> (agora, no fuso do navegador).
@@ -90,18 +93,5 @@ export function validarDependente(dep) {
   if (dep.dataNascimento > hojeParaInput()) return 'A data de nascimento não pode ser futura.'
   const cpf = somenteDigitos(dep.cpf)
   if (cpf && cpf.length !== 11) return 'CPF do dependente deve conter 11 números (ou deixe em branco).'
-  return ''
-}
-
-// AgendamentoRequestDTO: 3 datas futuras. O backend não exige que sejam distintas, mas faz sentido pedir.
-export function validarDatas(datas) {
-  if (datas.some((d) => !d)) return 'Informe as três opções de data e horário.'
-  const instantes = datas.map((d) => new Date(d).getTime())
-  if (instantes.some((t) => Number.isNaN(t) || t <= Date.now())) {
-    return 'Todas as opções de data e horário devem estar no futuro.'
-  }
-  if (new Set(instantes).size !== instantes.length) {
-    return 'As três opções devem ser diferentes entre si.'
-  }
   return ''
 }

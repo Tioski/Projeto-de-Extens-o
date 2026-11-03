@@ -1,6 +1,6 @@
 # Sistema de Pré-Agendamento de Exames
 
-O sistema permite que pacientes solicitem o pré-agendamento de exames de forma digital — escolhendo o exame, o paciente e três opções de data e horário — e acompanhem o andamento das solicitações. A equipe do hospital confirma uma das datas sugeridas.
+O sistema permite que pacientes solicitem o pré-agendamento de exames de forma digital — escolhendo o exame, o paciente e até três opções de data e horário — e acompanhem o andamento das solicitações. A equipe do hospital confirma uma das datas sugeridas.
 
 ---
 
@@ -33,14 +33,15 @@ O sistema está sendo desenvolvido a partir das necessidades identificadas junto
 | Login por **e-mail ou CPF** | ✅ Implementada |
 | Painel do paciente (contadores e próximos exames) | ✅ Implementada |
 | **Perfil** com todos os dados cadastrados | ✅ Implementada |
-| Solicitar novo exame (exame + paciente + 3 opções de data/horário + observação) | ✅ Implementada |
+| Solicitar novo exame em **4 etapas** com barra de progresso (exame → paciente → data e horário → confirmação) | ✅ Implementada |
+| Informar de **1 a 3** datas/horários desejados (só a 1ª é obrigatória) + observação | ✅ Implementada |
 | Cadastrar dependentes (filho, cônjuge, pai/mãe, outro) e agendar para eles | ✅ Implementada |
 | Consultar solicitações, ver status e datas sugeridas | ✅ Implementada |
 | Cancelar uma solicitação | ✅ Implementada |
 | Confirmar/recusar solicitações pela equipe do hospital (recepção) | ⏳ **Não existe** no back nem no front |
 | Área do médico | ⏳ Prevista no banco de dados, sem endpoints |
 
-> **Importante:** o paciente **sugere três datas** e a recepção confirma uma delas. Enquanto isso, a solicitação fica com status `PENDENTE`. Como o fluxo da recepção ainda não existe, hoje toda solicitação permanece `PENDENTE` (ou `CANCELADO`, se o paciente cancelar).
+> **Importante:** o paciente **sugere de uma a três datas** e a recepção confirma uma delas (veja [Datas opcionais](#datas-opcionais-e-o-back-end)). Enquanto isso, a solicitação fica com status `PENDENTE`. Como o fluxo da recepção ainda não existe, hoje toda solicitação permanece `PENDENTE` (ou `CANCELADO`, se o paciente cancelar).
 
 ### O que cada tipo de visitante vê
 
@@ -184,6 +185,7 @@ cp .env.example .env
 
 | Variável | Padrão | Descrição |
 |---|---|---|
+| `VITE_BACKEND_DATAS_OPCIONAIS` | `false` | `true` quando o back-end já aceita `dataOpcao2`/`dataOpcao3` nulas (veja [Datas opcionais](#datas-opcionais-e-o-back-end)). |
 | `VITE_API_URL` | `http://localhost:8080` | URL base da API (sem barra no final). É lida **na hora do build/start**: reinicie o `npm run dev` depois de alterar. |
 
 > **CORS:** o back-end só aceita requisições vindas de `http://localhost:*` e `http://127.0.0.1:*`. Rode o front por um desses endereços. Quando o sistema for hospedado, o domínio do front precisa ser adicionado em `SecurityConfig.corsConfigurationSource()` no back-end.
@@ -219,6 +221,7 @@ Projeto-de-Extens-o/
     ├── Footer.jsx / Footer.css
     │
     ├── components/            # Peças reutilizáveis
+    │   ├── ErrorBoundary.jsx  # Rede de segurança: erro inesperado mostra aviso em vez de tela branca
     │   ├── Header.jsx         # Navegação (muda conforme o usuário está logado ou não)
     │   ├── Hero.jsx           # Banner da página inicial
     │   └── Info.jsx           # Bloco informativo da página inicial
@@ -229,8 +232,14 @@ Projeto-de-Extens-o/
     │   ├── Cadastro/          # Criação de conta + busca de endereço por CEP
     │   ├── Painel/            # Contadores e próximos exames
     │   ├── Perfil/            # Dados cadastrados, pacientes vinculados e atalhos
-    │   ├── NovoExame/         # Solicitação de exame (+ cadastro de dependente)
+    │   ├── NovoExame/         # Assistente de agendamento em 4 etapas
+    │   │   ├── NovoExame.jsx          # Container: estado, validações e envio
+    │   │   ├── ProgressoEtapas.jsx    # Os 4 passos + barra de progresso
+    │   │   └── etapas/                # Uma tela por etapa: EtapaExame, EtapaPaciente (+ dependente), EtapaDataHorario, EtapaConfirmacao
     │   └── ConsultarExames/   # Lista, busca e cancelamento de solicitações
+    │
+    ├── config/
+    │   └── agendamento.js     # Flag das datas opcionais e limite do campo de data
     │
     ├── services/              # Comunicação com o "mundo externo"
     │   ├── http.js            # Wrapper do fetch: token, timeout, erros padronizados
@@ -243,10 +252,11 @@ Projeto-de-Extens-o/
     │
     └── utils/
         ├── agendamento.js     # Status, formatação de datas, validações de formulário, parentescos
+        ├── datas.js           # Leitura segura de datetime-local, validação das opções de data, payload da API
         └── mascaras.js        # Máscaras de CPF/telefone/CEP e formatadores de exibição
 ```
 
-> A pasta `src/pages/NovoExame/` contém 5 arquivos vazios (`SelecionarExame.jsx`, `SelecionarData.jsx`, `SelecionarHorario.jsx`, `Informacoes.jsx`, `ConfirmarExame.jsx`) que sobraram do planejamento inicial em etapas. **Não são usados** — a tela inteira está em `NovoExame.jsx`. Podem ser removidos.
+> A área do administrador/recepção (`src/pages/Admin/` e arquivos `admin`) é independente da área do paciente descrita aqui.
 
 ---
 
@@ -290,7 +300,7 @@ Não há *refresh token* nem endpoint de "usuário atual"; para carregar o perfi
 
 - **Máscaras de digitação** (`utils/mascaras.js`): CPF (`000.000.000-00`), telefone (`(47) 99999-9999` ou `(47) 3333-4444`) e CEP (`00000-000`). Aplicadas no cadastro e no CPF do dependente. **O campo de login não tem máscara**, pois aceita e-mail.
 - **O que vai para a API é sempre "limpo"**: CPF, telefone e CEP são enviados **só com dígitos**. A formatação é apenas visual (o Perfil formata novamente na exibição).
-- **Validações no cliente** (`utils/agendamento.js`) espelham os DTOs do back-end: CPF com 11 dígitos, CEP com 8, UF com 2 letras, nascimento no passado, senha com mínimo de 6 caracteres, três datas futuras **e diferentes entre si**. Isso evita chamadas que o back-end responderia com erro. O back-end continua sendo a validação final.
+- **Validações no cliente** (`utils/agendamento.js`) espelham os DTOs do back-end: CPF com 11 dígitos, CEP com 8, UF com 2 letras, nascimento no passado, senha com mínimo de 6 caracteres, a 1ª data obrigatória e, se informadas, a 2ª e a 3ª futuras **e diferentes entre si** (`utils/datas.js`). Isso evita chamadas que o back-end responderia com erro. O back-end continua sendo a validação final.
 - **Busca por CEP** (`services/viacep.js` + `Cadastro.jsx`): ao completar 8 dígitos, preenche logradouro, bairro, cidade e UF e leva o foco para "Número". Os campos continuam editáveis; CEP inexistente ou ViaCEP fora do ar apenas exibem uma mensagem e o formulário segue funcionando. Consultas antigas são canceladas se o CEP mudar.
 
 ### Estilos
@@ -378,7 +388,25 @@ O cadastro cria automaticamente o **paciente titular** do usuário.
   "observacao": "Prefiro de manhã"
 }
 ```
-`pacientePublicId: null` = o próprio titular. As datas são `OffsetDateTime` ISO-8601 (o front converte o valor do `datetime-local` com `toISOString()`).
+`pacientePublicId: null` = o próprio titular. As datas são `OffsetDateTime` ISO-8601 (o front converte o valor do `datetime-local` com `dataHoraParaIso` em `utils/datas.js`).
+
+### Datas opcionais e o back-end
+
+No front, o paciente informa de **1 a 3** datas. O back-end atual, porém, ainda exige as três (`@NotNull` nos DTOs e colunas `NOT NULL`). Por isso existe a flag `VITE_BACKEND_DATAS_OPCIONAIS`:
+
+| Flag | O que o front envia | Quando usar |
+|---|---|---|
+| `false` (padrão) | As datas que faltam **repetem a última informada** (1 data → `[a, a, a]`; 2 datas → `[a, b, b]`) | Enquanto o back-end exigir as três. A recepção vê datas repetidas. |
+| `true` | As datas que faltam vão como `null` | Depois que o back-end for ajustado. |
+
+Ajustes necessários no back-end para ligar a flag: remover `@NotNull` de `dataOpcao2`/`dataOpcao3` em `AgendamentoRequestDTO` e `ReagendarAgendamentoRequestDTO`; tornar as colunas `data_opcao_2/3` anuláveis na entidade e em uma nova migração Flyway (`ALTER COLUMN ... DROP NOT NULL`); tratar `null` em `RecepcaoAgendamentoService.confirmar` (opção escolhida sem data); e ocultar opções nulas no modal da recepção.
+
+### Assistente de agendamento (`pages/NovoExame/`)
+
+- Cada etapa é uma tela separada, no tamanho de um card grande; abaixo dos 4 passos há uma barra que avança 25% → 50% → 75% → 100%.
+- Escolher o exame leva à etapa 2; escolher o paciente (ou salvar um dependente) leva à etapa 3; **Continuar** valida as datas e leva à confirmação. Dá para voltar pelos botões ou clicando em um passo já alcançado.
+- **Reagendar** abre direto na etapa 3 (exame e paciente ficam fixos); **Agendar novamente** (exame concluído) abre na etapa 3 com exame e paciente pré-selecionados.
+- **Tela branca ao digitar a data (corrigido):** um ano com 5+ dígitos gerava uma data inválida e derrubava a árvore do React. Agora o campo limita o ano a 4 dígitos (`max`), a leitura da data é segura (`lerDataHoraLocal`) e há um `ErrorBoundary` global como rede de segurança.
 
 ### Formato de erro
 

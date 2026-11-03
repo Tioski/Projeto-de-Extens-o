@@ -4,26 +4,48 @@
   gap: 1.5rem;
 }
 
+/* ---------- Passos + barra de progresso ---------- */
+.progresso {
+  scroll-margin-top: 6rem; /* respeita o header fixo */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .progress-steps {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .step {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  width: 100%;
   padding: 0.9rem 1rem;
   background: var(--color-white);
   border: 1px solid var(--color-slate-200);
   border-radius: var(--radius-sm);
   color: var(--color-slate-600);
+  text-align: left;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.step:disabled {
+  cursor: default;
+}
+
+.step:not(:disabled):hover {
+  border-color: var(--color-primary);
 }
 
 .step span {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 1.8rem;
@@ -34,30 +56,80 @@
   font-weight: 700;
 }
 
+.step small {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .step.active {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
   color: var(--color-primary);
 }
 
-.step.active span {
+.step.active span,
+.step.done span {
   background: var(--color-primary);
   color: var(--color-white);
 }
 
-.step small {
-  font-size: 0.72rem;
+.step.done {
+  color: var(--color-primary);
+}
+
+.progress-bar {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-slate-200);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  /* --etapa vai de 1 a 4: 25%, 50%, 75% e 100% */
+  width: calc(var(--etapa, 1) * 25%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  transition: width 0.4s ease;
+}
+
+.progress-status {
+  margin: 0;
+  font-size: 0.8rem;
   font-weight: 600;
+  color: var(--color-slate-600);
 }
 
-.novo-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* ---------- Tela da etapa ---------- */
+.etapa-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 24rem;
+  padding: 1.75rem;
 }
 
-.option-list {
+.etapa-cabecalho h2 {
+  margin: 0 0 0.35rem;
+  outline: none;
+}
+
+.etapa-cabecalho p {
+  margin: 0;
+}
+
+.etapa-acoes {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.option-grid {
   display: grid;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.9rem;
 }
 
 .option-button {
@@ -70,19 +142,90 @@
   transition: border-color var(--transition), background var(--transition);
 }
 
+.option-button:hover {
+  border-color: var(--color-primary);
+}
+
 .option-button.selected {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
   color: var(--color-primary);
 }
 
-.confirmation-summary {
-  display: grid;
-  gap: 0.9rem;
-  margin: 1rem 0 1.5rem;
+.option-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-height: 5rem;
 }
 
-.confirmation-summary div {
+.option-card small {
+  color: var(--color-slate-600);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+/* ---------- Dependente ---------- */
+.dependente-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-slate-100);
+}
+
+.dependente-form-acoes {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Datas ---------- */
+.datas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.field-linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tag-obrigatoria,
+.tag-opcional {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.tag-obrigatoria {
+  color: var(--color-primary);
+}
+
+.tag-opcional {
+  color: var(--color-slate-600);
+}
+
+.link-limpar {
+  font-size: 0.75rem;
+}
+
+/* ---------- Resumo ---------- */
+.etapa-contexto,
+.resumo {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.etapa-contexto {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.etapa-contexto > div,
+.resumo > div {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -92,17 +235,68 @@
   border: 1px solid var(--color-slate-200);
 }
 
-.confirmation-summary span {
+.etapa-contexto dt,
+.resumo dt {
   color: var(--color-slate-600);
 }
 
-.confirmation-summary strong {
+.etapa-contexto dd,
+.resumo dd {
+  margin: 0;
+  font-weight: 700;
   color: var(--color-slate-900);
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .datas-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 760px) {
-  .progress-steps,
-  .novo-grid {
+  .progresso {
+    scroll-margin-top: 11rem; /* header fica mais alto no celular */
+  }
+
+  .progress-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .step {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.6rem 0.3rem;
+    text-align: center;
+  }
+
+  .step small {
+    font-size: 0.65rem;
+  }
+
+  .etapa-card {
+    padding: 1.1rem;
+    min-height: 0;
+  }
+
+  .dependente-form,
+  .etapa-contexto {
     grid-template-columns: 1fr;
+  }
+
+  .etapa-acoes {
+    flex-direction: column-reverse;
+  }
+
+  .etapa-acoes .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar-fill {
+    transition: none;
   }
 }
