@@ -1,13 +1,14 @@
 import './Home.css'
+import { CalendarPlus, MagnifyingGlass, UserCircle } from '@phosphor-icons/react'
 import Hero from '../../components/Hero'
 import Info from '../../components/Info'
 import { useAgendamentos } from '../../hooks/useAgendamentos'
 import { dataDeReferencia, formatarDataHora } from '../../utils/agendamento'
 
 const services = [
-  { title: 'Agendar exame', description: 'Selecione o procedimento e escolha dia e horário com praticidade.', action: 'Iniciar agendamento' },
-  { title: 'Consultar exames', description: 'Acompanhe solicitações e visualize seus próximos atendimentos.', action: 'Ver agenda' },
-  { title: 'Painel do paciente', description: 'Monitore sua fila, status e informações essenciais em um só lugar.', action: 'Abrir painel' },
+  { title: 'Agendar exame', icon: CalendarPlus, description: 'Selecione o procedimento e escolha dia e horário com praticidade.', action: 'Iniciar agendamento' },
+  { title: 'Consultar exames', icon: MagnifyingGlass, description: 'Acompanhe solicitações e visualize seus próximos atendimentos.', action: 'Ver agenda' },
+  { title: 'Painel do paciente', icon: UserCircle, description: 'Monitore sua fila, status e informações essenciais em um só lugar.', action: 'Abrir painel' },
 ]
 
 // Resumo com dados reais do usuário logado (só é montado quando existe sessão).
@@ -73,9 +74,9 @@ function HomePage({ onNavigate = () => {}, session = null }) {
           </div>
 
           <div className="service-grid">
-            {services.map((service) => (
+            {services.map(({ icon: Icone, ...service }) => (
               <article key={service.title} className="card service-card">
-                <div className="service-icon" aria-hidden="true">✦</div>
+                <div className="service-icon" aria-hidden="true"><Icone size={26} weight="duotone" /></div>
                 <h3>{service.title}</h3>
                 <p>{service.description}</p>
                 <button type="button" className="btn btn-secondary" onClick={() => onNavigate(service.title.includes('Agendar') ? 'novo-exame' : service.title.includes('Consultar') ? 'consultar-exames' : 'painel')}>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import CampoSenha from '../../components/CampoSenha'
 import './Cadastro.css'
 import { authApi, usuarioApi } from '../../services/api'
 import { buscarCep } from '../../services/viacep'
@@ -29,7 +30,11 @@ function Campo({ name, label, form, onChange, type = 'text', required = true, aj
   return (
     <div className="field">
       <label htmlFor={name}>{label}</label>
-      <input id={name} name={name} type={type} value={form[name]} onChange={onChange} required={required} {...resto} />
+      {type === 'password' ? (
+        <CampoSenha id={name} name={name} value={form[name]} onChange={onChange} required={required} {...resto} />
+      ) : (
+        <input id={name} name={name} type={type} value={form[name]} onChange={onChange} required={required} {...resto} />
+      )}
       {ajuda?.msg && (
         <small className={`field-hint field-hint-${ajuda.tipo}`} role="status">
           {ajuda.msg}

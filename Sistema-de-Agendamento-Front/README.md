@@ -61,8 +61,9 @@ O sistema está sendo desenvolvido a partir das necessidades identificadas junto
 | JavaScript (ESM) + JSX | — | Linguagem |
 | CSS puro | — | Estilos (um `.css` por componente/página, variáveis em `index.css`) |
 | ESLint | 10 | Qualidade de código |
+| Phosphor Icons (`@phosphor-icons/react`) | 2 | Ícones da área do paciente (header, serviços rápidos, olhinho da senha) |
 
-Não há bibliotecas de roteamento, estado global, formulários ou requisições (nem React Router, Redux ou Axios). Tudo usa React + `fetch` do navegador.
+Fora a biblioteca de ícones, não há bibliotecas de roteamento, estado global, formulários ou requisições (nem React Router, Redux ou Axios). Tudo usa React + `fetch` do navegador.
 
 ### Back-end ([repositório próprio](https://github.com/Lucas-Eduardo-Karvat/Sistema-de-Agendamento))
 
@@ -214,6 +215,8 @@ Projeto-de-Extens-o/
 ├── eslint.config.js
 ├── package.json
 ├── .env.example               # Modelo das variáveis de ambiente (VITE_API_URL)
+├── public/
+│   └── hospital.jpg           # Foto da fachada exibida na página inicial (Hero)
 └── src/
     ├── main.jsx               # Monta o <App /> (StrictMode)
     ├── App.jsx                # "Roteador": controla a página atual, a sessão e a proteção de rotas
@@ -221,6 +224,7 @@ Projeto-de-Extens-o/
     ├── Footer.jsx / Footer.css
     │
     ├── components/            # Peças reutilizáveis
+    │   ├── CampoSenha.jsx     # Campo de senha com o "olhinho" para mostrar/ocultar (login, cadastro, perfil)
     │   ├── ErrorBoundary.jsx  # Rede de segurança: erro inesperado mostra aviso em vez de tela branca
     │   ├── Header.jsx         # Navegação (muda conforme o usuário está logado ou não)
     │   ├── Hero.jsx           # Banner da página inicial
@@ -507,7 +511,7 @@ Roteiro rápido de teste manual:
 
 ### Front-end
 
-- **Imagens ausentes:** a página inicial usa `/hospital.png` (`Hero.jsx`) e o `index.html` usa `/favicon.svg`, mas **a pasta `public/` não existe no repositório**. Crie `public/hospital.png` e `public/favicon.svg` (o Vite serve a pasta `public/` na raiz do site).
+- **Favicon ausente:** o `index.html` usa `/favicon.svg`, mas ele não existe em `public/`. Crie `public/favicon.svg` (o Vite serve a pasta `public/` na raiz do site). A foto da página inicial já está em `public/hospital.jpg`.
 - **Arquivos vazios** em `src/pages/NovoExame/` (veja [Estrutura](#-estrutura-do-projeto)).
 - A barra de progresso da tela *Novo exame* é apenas visual (não acompanha o preenchimento).
 - Sem React Router: a URL não muda ao navegar.

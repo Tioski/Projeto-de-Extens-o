@@ -1,4 +1,5 @@
 import './Header.css'
+import { Hospital } from '@phosphor-icons/react'
 
 // Visitante: só "Início" e "Entrar". Depois do login aparecem as funcionalidades e a aba Perfil.
 const NAV_VISITANTE = [{ label: 'Início', key: 'home' }]
@@ -18,7 +19,7 @@ function Header({ currentPage = 'home', onNavigate = () => {}, session = null, o
     <header className="site-header">
       <div className="container header-container">
         <button type="button" className="brand" onClick={() => onNavigate('home')} aria-label="Ir para a página inicial">
-          <span className="brand-mark" aria-hidden="true">+</span>
+          <span className="brand-mark" aria-hidden="true"><Hospital size={20} weight="fill" /></span>
           <span className="brand-text">Hospital Santa Cruz de Canoinhas</span>
         </button>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import CampoSenha from '../../components/CampoSenha'
 import '../Home/Home.css'
 import '../Painel/Painel.css'
 import './Perfil.css'
@@ -62,7 +63,11 @@ function Campo({ id, label, value, onChange, type = 'text', ...resto }) {
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <input id={id} name={id} type={type} value={value} onChange={onChange} {...resto} />
+      {type === 'password' ? (
+        <CampoSenha id={id} name={id} value={value} onChange={onChange} {...resto} />
+      ) : (
+        <input id={id} name={id} type={type} value={value} onChange={onChange} {...resto} />
+      )}
     </div>
   )
 }

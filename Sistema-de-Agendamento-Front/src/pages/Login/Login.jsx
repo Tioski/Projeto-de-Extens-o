@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import CampoSenha from '../../components/CampoSenha'
 import './Login.css'
 import { authApi } from '../../services/api'
 
@@ -53,9 +54,8 @@ function LoginPage({ onNavigate = () => {}, onLogin = () => {} }) {
 
             <div className="field">
               <label htmlFor="senha">Senha</label>
-              <input
+              <CampoSenha
                 id="senha"
-                type="password"
                 autoComplete="current-password"
                 placeholder="Digite sua senha"
                 value={senha}

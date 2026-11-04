@@ -24,7 +24,7 @@ function HeroSection({ onNavigate = () => {} }) {
         </div>
 
         <div className="hero-visual" aria-label="Ilustração institucional do hospital">
-          <img src="/hospital.png" alt="Atendimento no Hospital Santa Cruz de Canoinhas" />
+          <img src="/hospital.jpg" alt="Fachada do Hospital Santa Cruz de Canoinhas" />
         </div>
       </div>
     </section>
