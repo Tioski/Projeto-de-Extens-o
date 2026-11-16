@@ -904,3 +904,34 @@ button.adm-stat.ativo {
   display: inline-flex;
   gap: 0.4rem;
 }
+
+/* ---------- Administrador: usuários e exames ---------- */
+.adm-titulo-acao {
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.adm-form-grid h3 {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+}
+
+.adm-exame-descricao {
+  display: block;
+  max-width: 46ch;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--color-slate-600);
+  white-space: pre-line;
+}
+
+.adm-icone-botao.perigo:hover {
+  background: #fde8e8;
+  color: var(--color-danger, #b42318);
+}
+
+.adm-icone-botao:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

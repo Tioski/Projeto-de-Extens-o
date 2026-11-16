@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './Admin.css'
 import AdminLayout from '../../components/AdminLayout'
+import SeletorHorario from '../../components/SeletorHorario'
 import { exameApi, recepcaoApi } from '../../services/api'
 import { buscarCep } from '../../services/viacep'
 import {
-  agoraParaInput,
   formatarDataHora,
   hojeParaInput,
   inputParaIso,
@@ -279,7 +279,15 @@ function AdminNovoPaciente({ session = null, currentPage = 'recepcao-novo-pacien
                 ))}
               </select>
             </div>
-            <Campo name="dataHora" label="Data e horário" type="datetime-local" min={agoraParaInput()} {...campoAgendamento} />
+            <div className="field largo">
+              <label>
+                Data e horário *{formAgendamento.dataHora && <> — <strong>{formatarDataHora(formAgendamento.dataHora)}</strong></>}
+              </label>
+              <SeletorHorario
+                value={formAgendamento.dataHora}
+                onChange={(dataHora) => setFormAgendamento((atual) => ({ ...atual, dataHora }))}
+              />
+            </div>
             <Campo name="consultorio" label="Consultório" maxLength={100} placeholder="Ex.: Sala 204 - Bloco B" {...campoAgendamento} />
             <div className="largo">
               <Campo name="observacao" label="Observação" required={false} placeholder="Ex.: chegar em jejum de 8 horas" {...campoAgendamento} />

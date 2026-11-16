@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import './NovoExame.css'
 import { agendamentoApi, exameApi, pacienteApi } from '../../services/api'
+import SeletorHorario from '../../components/SeletorHorario'
 import { mascararCpf } from '../../utils/mascaras'
 import {
   PARENTESCOS,
   ROTULOS_PARENTESCO as ROTULOS,
-  agoraParaInput,
   formatarDataHora,
   hojeParaInput,
   inputParaIso,
@@ -31,6 +31,7 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
   const [exameId, setExameId] = useState(base?.examePublicId ?? '')
   const [pacienteId, setPacienteId] = useState('')
   const [datas, setDatas] = useState(['', '', ''])
+  const [opcaoAtiva, setOpcaoAtiva] = useState(0)
   const [observacao, setObservacao] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [erroEnvio, setErroEnvio] = useState('')
@@ -66,10 +67,13 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
 
   const exameSelecionado = exames.find((e) => e.publicId === exameId)
   const pacienteSelecionado = pacientes.find((p) => p.publicId === pacienteId)
-  const minimo = agoraParaInput()
 
-  const alterarData = (indice, valor) => {
-    setDatas((atual) => atual.map((v, i) => (i === indice ? valor : v)))
+  // Escolhe o horário da opção ativa e avança para a próxima ainda vazia.
+  const escolherHorario = (valor) => {
+    const novas = datas.map((v, i) => (i === opcaoAtiva ? valor : v))
+    setDatas(novas)
+    const proxima = [1, 2, 0].map((d) => (opcaoAtiva + d) % 3).find((i) => !novas[i])
+    if (proxima !== undefined) setOpcaoAtiva(proxima)
   }
 
   const alterarDependente = (campo, valor) => {
@@ -268,19 +272,27 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
 
           <section className="card panel-card">
             <h3>3. Datas e horários</h3>
-            <p className="muted-text">Sugira três opções. A recepção confirmará uma delas.</p>
-            {datas.map((valor, indice) => (
-              <div key={indice} className="field">
-                <label htmlFor={`data-opcao-${indice + 1}`}>{indice + 1}ª opção</label>
-                <input
-                  id={`data-opcao-${indice + 1}`}
-                  type="datetime-local"
-                  min={minimo}
-                  value={valor}
-                  onChange={(e) => alterarData(indice, e.target.value)}
-                />
-              </div>
-            ))}
+            <p className="muted-text">Sugira três horários livres. A recepção confirmará um deles.</p>
+            <div className="agd-opcoes" role="tablist" aria-label="Opções de data e horário">
+              {datas.map((valor, indice) => (
+                <button
+                  key={indice}
+                  type="button"
+                  role="tab"
+                  aria-selected={indice === opcaoAtiva}
+                  className={`agd-opcao${indice === opcaoAtiva ? ' ativa' : ''}`}
+                  onClick={() => setOpcaoAtiva(indice)}
+                >
+                  <span>{indice + 1}ª opção</span>
+                  <strong>{valor ? formatarDataHora(valor) : 'Escolher'}</strong>
+                </button>
+              ))}
+            </div>
+            <SeletorHorario
+              value={datas[opcaoAtiva]}
+              onChange={escolherHorario}
+              indisponiveis={datas.filter((_, i) => i !== opcaoAtiva)}
+            />
             <div className="field">
               <label htmlFor="observacao">Observação (opcional)</label>
               <textarea id="observacao" rows={3} value={observacao} onChange={(e) => setObservacao(e.target.value)} />

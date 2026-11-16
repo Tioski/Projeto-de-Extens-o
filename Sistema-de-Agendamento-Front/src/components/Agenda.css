@@ -1,0 +1,234 @@
+/* Calendário, seletor de horários e tela de agenda (prefixo agd-). */
+
+.agd-seletor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* ---------- Calendário ---------- */
+.agd-calendario {
+  padding: 0.9rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+}
+
+.agd-cal-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-display);
+}
+
+.agd-cal-nav {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 8px;
+  background: var(--color-slate-100);
+  color: var(--color-slate-800);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.agd-cal-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.agd-cal-grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.agd-cal-semana {
+  padding-bottom: 0.2rem;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-slate-600);
+}
+
+.agd-dia {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.agd-dia small {
+  font-size: 0.6rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.agd-dia:hover:not(:disabled) { border-color: var(--color-primary); }
+.agd-dia:focus-visible { outline: 3px solid rgba(13, 115, 119, 0.35); outline-offset: 1px; }
+.agd-dia.hoje { box-shadow: inset 0 0 0 1px var(--color-slate-400); }
+.agd-dia.lotado { background: rgba(217, 119, 6, 0.12); color: var(--color-warning); }
+.agd-dia.fechado { background: rgba(239, 68, 68, 0.1); color: var(--color-error); }
+.agd-dia.passado { background: transparent; color: var(--color-slate-400); font-weight: 400; }
+.agd-dia:disabled { cursor: not-allowed; }
+.agd-dia.selecionado { background: var(--color-primary); color: var(--color-white); border-color: var(--color-primary-dark); }
+
+/* ponto de "ajuste próprio" */
+.agd-dia.ajustado::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-info);
+}
+
+.agd-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.72rem;
+  color: var(--color-slate-600);
+}
+
+.agd-legenda li { display: flex; align-items: center; gap: 0.35rem; }
+.agd-cor { width: 0.7rem; height: 0.7rem; border-radius: 3px; display: inline-block; }
+.agd-cor.livre { background: var(--color-primary-light); border: 1px solid var(--color-primary); }
+.agd-cor.lotado { background: rgba(217, 119, 6, 0.3); }
+.agd-cor.fechado { background: rgba(239, 68, 68, 0.3); }
+.agd-cor.ajustado { background: var(--color-info); border-radius: 50%; }
+
+/* ---------- Horários ---------- */
+.agd-horarios h4 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.agd-vazio {
+  margin: 0.25rem 0;
+  font-size: 0.88rem;
+  color: var(--color-slate-600);
+}
+
+.agd-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr));
+  gap: 0.45rem;
+}
+
+.agd-slot {
+  padding: 0.5rem 0;
+  border: 1px solid var(--color-slate-300);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-slate-800);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.agd-slot:hover:not(:disabled) { border-color: var(--color-primary); background: var(--color-primary-light); }
+.agd-slot:focus-visible { outline: 3px solid rgba(13, 115, 119, 0.35); outline-offset: 1px; }
+.agd-slot.escolhido { background: var(--color-primary); border-color: var(--color-primary-dark); color: var(--color-white); }
+.agd-slot:disabled { cursor: not-allowed; color: var(--color-slate-400); background: var(--color-slate-100); }
+.agd-slot.ocupado:disabled { text-decoration: line-through; }
+.agd-slot.escolhido:disabled { color: var(--color-white); background: var(--color-primary); }
+
+/* ---------- Abas das 3 opções (paciente) ---------- */
+.agd-opcoes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.agd-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-slate-100);
+  color: var(--color-slate-800);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.agd-opcao span { font-size: 0.72rem; color: var(--color-slate-600); }
+.agd-opcao strong { font-size: 0.85rem; }
+.agd-opcao.ativa { border-color: var(--color-primary); background: var(--color-primary-light); }
+.agd-opcao.ativa span { color: var(--color-primary); }
+
+/* ---------- Tela de agenda (recepção) ---------- */
+.agd-admin {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+.agd-admin-cols {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.agd-modos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.agd-modos label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.agd-resumo {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--color-slate-600);
+}
+
+@media (max-width: 900px) {
+  .agd-admin-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .agd-opcoes { grid-template-columns: 1fr; }
+}

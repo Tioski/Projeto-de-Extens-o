@@ -1,18 +1,32 @@
 import './AdminLayout.css'
 import Icone from './Icone'
+import { ehCargoAdmin } from '../services/session'
 import { dataIsoHoje, dataPorExtenso, iniciais } from '../utils/admin'
 
-const MENU = [
+// Recepção e administrador têm as mesmas telas; o administrador troca "Pacientes" por "Usuários" e ganha "Exames".
+const MENU_RECEPCAO = [
   { chave: 'recepcao', rotulo: 'Dashboard', icone: 'dashboard' },
   { chave: 'recepcao-agendamentos', rotulo: 'Agendamentos', icone: 'calendario' },
+  { chave: 'recepcao-agenda', rotulo: 'Agenda', icone: 'relogio' },
   { chave: 'recepcao-pacientes', rotulo: 'Pacientes', icone: 'pacientes' },
+]
+
+const MENU_ADMIN = [
+  { chave: 'recepcao', rotulo: 'Dashboard', icone: 'dashboard' },
+  { chave: 'recepcao-agendamentos', rotulo: 'Agendamentos', icone: 'calendario' },
+  { chave: 'recepcao-agenda', rotulo: 'Agenda', icone: 'relogio' },
+  { chave: 'admin-usuarios', rotulo: 'Usuários', icone: 'pacientes' },
+  { chave: 'admin-exames', rotulo: 'Exames', icone: 'exame' },
 ]
 
 // Páginas que "pertencem" a cada item do menu (para marcar o item ativo).
 const PAGINAS_DO_ITEM = {
   recepcao: ['recepcao'],
   'recepcao-agendamentos': ['recepcao-agendamentos'],
+  'recepcao-agenda': ['recepcao-agenda'],
   'recepcao-pacientes': ['recepcao-pacientes', 'recepcao-novo-paciente'],
+  'admin-usuarios': ['admin-usuarios', 'admin-novo-recepcionista', 'recepcao-novo-paciente'],
+  'admin-exames': ['admin-exames'],
 }
 
 function AdminLayout({
@@ -25,6 +39,8 @@ function AdminLayout({
   children,
 }) {
   const nome = session?.nome ?? 'Administrador'
+  const ehAdmin = ehCargoAdmin(session?.cargo)
+  const menu = ehAdmin ? MENU_ADMIN : MENU_RECEPCAO
 
   return (
     <div className="adm-shell">
@@ -35,12 +51,12 @@ function AdminLayout({
           </span>
           <div>
             <strong>Hospital Santa Cruz de Canoinhas</strong>
-            <small>ÁREA ADMIN</small>
+            <small>{ehAdmin ? 'ÁREA ADMIN' : 'ÁREA DA RECEPÇÃO'}</small>
           </div>
         </div>
 
         <nav className="adm-nav">
-          {MENU.map((item) => {
+          {menu.map((item) => {
             const ativo = PAGINAS_DO_ITEM[item.chave]?.includes(currentPage)
             return (
               <button

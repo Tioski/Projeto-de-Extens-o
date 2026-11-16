@@ -66,8 +66,13 @@ export function ehProximo(a, agora = Date.now()) {
   return dataDeReferencia(a) >= agora
 }
 
+// Pendente não se cancela: a recepção decide entre confirmar ou recusar. Só o confirmado pode ser cancelado.
 export function podeCancelar(a) {
-  return a.status === 'PENDENTE' || a.status === 'CONFIRMADO'
+  return a.status === 'CONFIRMADO'
+}
+
+export function podeRecusar(a) {
+  return a.status === 'PENDENTE'
 }
 
 export const ROTULO_STATUS_FILTRO = {
@@ -103,4 +108,11 @@ export function idadeEmAnos(iso) {
   const aindaNaoFez = hoje.getMonth() + 1 < Number(m[2]) || (hoje.getMonth() + 1 === Number(m[2]) && hoje.getDate() < Number(m[3]))
   if (aindaNaoFez) anos -= 1
   return anos
+}
+
+// ---- Usuários (área do administrador) ----
+export const ROTULOS_CARGO = {
+  PACIENTE: 'Paciente',
+  RECEPCIONISTA: 'Recepcionista',
+  ADMIN: 'Administrador',
 }
