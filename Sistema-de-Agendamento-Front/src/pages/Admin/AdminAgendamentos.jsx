@@ -13,6 +13,7 @@ import {
   dataExibida,
   ehProximo,
   podeCancelar,
+  podeRecusar,
   textoDataHora,
 } from '../../utils/admin'
 
@@ -212,6 +213,9 @@ function AdminAgendamentos({ session = null, currentPage = 'recepcao-agendamento
                 <button type="button" className="adm-link" onClick={() => abrir(a)}>Ver Detalhes</button>
                 {a.status === 'CONFIRMADO' && (
                   <button type="button" className="adm-link" onClick={() => abrir(a, 'remarcar')}>Remarcar</button>
+                )}
+                {podeRecusar(a) && (
+                  <button type="button" className="adm-link perigo" onClick={() => abrir(a, 'recusar')}>Recusar</button>
                 )}
                 {podeCancelar(a) && (
                   <button type="button" className="adm-link perigo" onClick={() => abrir(a, 'cancelar')}>Cancelar</button>

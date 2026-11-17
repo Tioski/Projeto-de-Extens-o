@@ -1,4 +1,4 @@
-import { formatarDataHoraLocal } from '../../../utils/datas'
+import { formatarDataHora } from '../../../utils/agendamento'
 
 // Etapa 4 — revisão e envio. Mostra somente as datas que a pessoa informou.
 function EtapaConfirmacao({ contexto, datas, observacao, reagendando, enviando, erro, onVoltar, onConfirmar }) {
@@ -17,7 +17,7 @@ function EtapaConfirmacao({ contexto, datas, observacao, reagendando, enviando, 
         {informadas.map((valor, i) => (
           <div key={valor}>
             <dt>{informadas.length === 1 ? 'Data e horário desejados' : `${i + 1}ª opção`}</dt>
-            <dd>{formatarDataHoraLocal(valor)}</dd>
+            <dd>{formatarDataHora(valor)}</dd>
           </div>
         ))}
         {observacao.trim() && (

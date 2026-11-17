@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { exameApi, recepcaoApi } from '../../services/api'
-import { agoraParaInput, inputParaIso } from '../../utils/agendamento'
+import SeletorHorario from '../../components/SeletorHorario'
+import { formatarDataHora, inputParaIso } from '../../utils/agendamento'
 
 const FORM_INICIAL = { exame: '', dataHora: '', consultorio: '', observacao: '' }
 
@@ -71,15 +72,13 @@ function AgendarExameForm({ pacientePublicId, onAgendado, onVoltar }) {
             ))}
           </select>
         </div>
-        <div className="field">
-          <label htmlFor="agendar-data">Data e horário *</label>
-          <input
-            id="agendar-data"
-            name="dataHora"
-            type="datetime-local"
-            min={agoraParaInput()}
+        <div className="field largo">
+          <label>
+            Data e horário *{form.dataHora && <> — <strong>{formatarDataHora(form.dataHora)}</strong></>}
+          </label>
+          <SeletorHorario
             value={form.dataHora}
-            onChange={alterar}
+            onChange={(dataHora) => setForm((atual) => ({ ...atual, dataHora }))}
             disabled={enviando}
           />
         </div>

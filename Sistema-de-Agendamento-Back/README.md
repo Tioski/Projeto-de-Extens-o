@@ -91,7 +91,7 @@ O projeto adota uma arquitetura em camadas bem definida (*Layered Architecture*)
 4. **Controller**: Embala o Response DTO em um `ResponseEntity` HTTP com o código de status adequado (`200 OK`, `201 Created`, `401 Unauthorized`).
 5. **JSON / Frontend**: O framework serializa o DTO em JSON e entrega ao cliente HTTP frontend.
 
-----
+---
 
 ## 3. DOCUMENTAÇÃO TÉCNICA DO BANCO DE DADOS
 

@@ -38,14 +38,7 @@ export function dataDeReferencia(agendamento) {
   return instantes.length ? Math.min(...instantes) : Infinity
 }
 
-// Valor mínimo para <input type="datetime-local"> (agora, no fuso do navegador).
-export function agoraParaInput() {
-  const agora = new Date()
-  agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset())
-  return agora.toISOString().slice(0, 16)
-}
-
-// "2026-10-20T09:00" (datetime-local) -> ISO-8601 que o OffsetDateTime do backend aceita.
+// Instante qualquer (ISO com offset, ou datetime-local) -> ISO-8601 em UTC que o OffsetDateTime do backend aceita.
 export function inputParaIso(valor) {
   return new Date(valor).toISOString()
 }

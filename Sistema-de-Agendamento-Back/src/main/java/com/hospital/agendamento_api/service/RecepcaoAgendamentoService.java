@@ -44,17 +44,20 @@ public class RecepcaoAgendamentoService {
     private final MedicoRepository medicoRepository;
     private final PacienteRepository pacienteRepository;
     private final ExameRepository exameRepository;
+    private final AgendaService agendaService;
 
     public RecepcaoAgendamentoService(AgendamentoRepository agendamentoRepository,
                                       UsuarioRepository usuarioRepository,
                                       MedicoRepository medicoRepository,
                                       PacienteRepository pacienteRepository,
-                                      ExameRepository exameRepository) {
+                                      ExameRepository exameRepository,
+                                      AgendaService agendaService) {
         this.agendamentoRepository = agendamentoRepository;
         this.usuarioRepository = usuarioRepository;
         this.medicoRepository = medicoRepository;
         this.pacienteRepository = pacienteRepository;
         this.exameRepository = exameRepository;
+        this.agendaService = agendaService;
     }
 
     /** Lista os agendamentos. Sem filtro traz todos; com filtro, só o status pedido (ex.: PENDENTE). */
@@ -102,6 +105,9 @@ public class RecepcaoAgendamentoService {
             throw new BusinessException(
                     "A data escolhida já passou. Escolha outra opção ou cancele o agendamento.");
         }
+
+        // Dia aberto, horário da grade e ainda livre. A partir daqui o horário fica bloqueado para outros pacientes
+        agendaService.garantirHorarioLivre(dataEscolhida, agendamento.getId());
 
         if (dto.medicoPublicId() != null) {
             Medico medico = medicoRepository.findByUsuarioPublicId(dto.medicoPublicId())
@@ -204,6 +210,7 @@ public class RecepcaoAgendamentoService {
         if (!dto.dataAgendada().isAfter(OffsetDateTime.now())) {
             throw new BusinessException("A data e o horário do exame devem estar no futuro.");
         }
+        agendaService.garantirHorarioLivre(dto.dataAgendada(), null);
 
         Agendamento agendamento = new Agendamento();
         agendamento.setPaciente(paciente);
@@ -254,6 +261,9 @@ public class RecepcaoAgendamentoService {
         if (consultorio == null || consultorio.isBlank()) {
             throw new BusinessException("Informe o consultório onde o exame será realizado.");
         }
+
+        // O horário atual do próprio agendamento não conta como conflito (pode "remarcar" para o mesmo horário)
+        agendaService.garantirHorarioLivre(novaData, agendamento.getId());
 
         OffsetDateTime dataAnterior = agendamento.getDataConfirmada();
 

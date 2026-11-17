@@ -1,6 +1,6 @@
-import { useRef } from 'react'
-import { DATA_HORA_MAXIMA_INPUT } from '../../../config/agendamento'
-import { agoraParaInput } from '../../../utils/agendamento'
+import { useState } from 'react'
+import SeletorHorario from '../../../components/SeletorHorario'
+import { formatarDataHora } from '../../../utils/agendamento'
 
 const OPCOES = [
   { indice: 0, rotulo: '1ª opção', obrigatoria: true },
@@ -8,28 +8,23 @@ const OPCOES = [
   { indice: 2, rotulo: '3ª opção', obrigatoria: false },
 ]
 
-// Etapa 3 — datas e horários desejados. Só a 1ª opção é obrigatória; a 2ª e a 3ª são opcionais.
+// Etapa 3 — dia e horário. Mesmo padrão da agenda da recepção: escolhe-se o dia no calendário e,
+// em seguida, um dos horários livres daquele dia. Só a 1ª opção é obrigatória; a 2ª e a 3ª são opcionais.
 function EtapaDataHorario({
   contexto,
   datas,
-  erros,
+  erro,
   observacao,
   reagendando,
+  horarioAtual,
   onAlterarData,
   onAlterarObservacao,
   onVoltar,
   onCancelar,
   onContinuar,
 }) {
-  const campos = useRef([])
-  const minimo = agoraParaInput()
-
-  // O navegador devolve "" quando o campo foi preenchido só em parte (ex.: dia e mês, sem ano).
-  // `validity.badInput` permite avisar a pessoa em vez de ignorar o que ela começou a digitar.
-  const continuar = () => {
-    const incompletos = OPCOES.map(({ indice }) => Boolean(campos.current[indice]?.validity?.badInput))
-    onContinuar(incompletos)
-  }
+  const [opcaoAtiva, setOpcaoAtiva] = useState(0)
+  const ativa = OPCOES[opcaoAtiva]
 
   return (
     <>
@@ -37,8 +32,8 @@ function EtapaDataHorario({
         <h2 id="etapa-titulo" tabIndex={-1}>3. Quando você prefere fazer o exame?</h2>
         <p className="muted-text">
           {reagendando
-            ? 'Informe as novas datas e horários. A 1ª opção é obrigatória; a 2ª e a 3ª são opcionais.'
-            : 'Informe a data e o horário de sua preferência. A 1ª opção é obrigatória; a 2ª e a 3ª são opcionais e ajudam a recepção a encontrar um horário. A recepção confirmará uma delas.'}
+            ? 'Escolha o novo dia no calendário e depois um horário livre. A 1ª opção é obrigatória; a 2ª e a 3ª são opcionais.'
+            : 'Escolha o dia no calendário e depois um horário livre. A 1ª opção é obrigatória; a 2ª e a 3ª são opcionais e ajudam a recepção a encontrar um horário. A recepção confirmará um deles.'}
         </p>
       </div>
 
@@ -47,42 +42,42 @@ function EtapaDataHorario({
         <div><dt>Paciente</dt><dd>{contexto.paciente}</dd></div>
       </dl>
 
-      <div className="datas-grid">
-        {OPCOES.map(({ indice, rotulo, obrigatoria }) => {
-          const id = `data-opcao-${indice + 1}`
-          const erro = erros[indice]
-          const preenchida = Boolean(datas[indice])
+      <div>
+        <div className="agd-opcoes" role="tablist" aria-label="Opções de data e horário">
+          {OPCOES.map(({ indice, rotulo, obrigatoria }) => (
+            <button
+              key={indice}
+              type="button"
+              role="tab"
+              aria-selected={indice === opcaoAtiva}
+              className={`agd-opcao${indice === opcaoAtiva ? ' ativa' : ''}`}
+              onClick={() => setOpcaoAtiva(indice)}
+            >
+              <span>{rotulo} · {obrigatoria ? 'obrigatória' : 'opcional'}</span>
+              <strong>{datas[indice] ? formatarDataHora(datas[indice]) : 'Escolher'}</strong>
+            </button>
+          ))}
+        </div>
 
-          return (
-            <div key={id} className={`field ${erro ? 'error' : ''}`}>
-              <div className="field-linha">
-                <label htmlFor={id}>
-                  {rotulo} <span className={obrigatoria ? 'tag-obrigatoria' : 'tag-opcional'}>{obrigatoria ? 'obrigatória' : 'opcional'}</span>
-                </label>
-                {!obrigatoria && preenchida && (
-                  <button type="button" className="link-button link-limpar" aria-label={`Limpar ${rotulo}`} onClick={() => onAlterarData(indice, '')}>
-                    Limpar
-                  </button>
-                )}
-              </div>
-              <input
-                id={id}
-                ref={(el) => {
-                  campos.current[indice] = el
-                }}
-                type="datetime-local"
-                min={minimo}
-                max={DATA_HORA_MAXIMA_INPUT}
-                value={datas[indice]}
-                aria-invalid={erro ? true : undefined}
-                aria-describedby={erro ? `${id}-erro` : undefined}
-                onChange={(e) => onAlterarData(indice, e.target.value)}
-              />
-              {erro && <span id={`${id}-erro`} className="field-error" role="alert">{erro}</span>}
-            </div>
-          )
-        })}
+        {!ativa.obrigatoria && datas[opcaoAtiva] && (
+          <p className="opcao-limpar">
+            <button type="button" className="link-button" onClick={() => onAlterarData(opcaoAtiva, '')}>
+              Limpar a {ativa.rotulo}
+            </button>
+          </p>
+        )}
+
+        {/* key: cada opção abre o calendário no mês/dia do horário que ela já tem */}
+        <SeletorHorario
+          key={opcaoAtiva}
+          value={datas[opcaoAtiva]}
+          onChange={(valor) => onAlterarData(opcaoAtiva, valor)}
+          indisponiveis={datas.filter((_, i) => i !== opcaoAtiva)}
+          horarioAtual={horarioAtual}
+        />
       </div>
+
+      {erro && <div className="alert alert-error" role="alert">{erro}</div>}
 
       <div className="field">
         <label htmlFor="observacao">Observação (opcional)</label>
@@ -102,7 +97,7 @@ function EtapaDataHorario({
         ) : (
           <button type="button" className="btn btn-secondary" onClick={onCancelar}>Cancelar</button>
         )}
-        <button type="button" className="btn btn-primary" onClick={continuar}>Continuar</button>
+        <button type="button" className="btn btn-primary" onClick={onContinuar}>Continuar</button>
       </div>
     </>
   )

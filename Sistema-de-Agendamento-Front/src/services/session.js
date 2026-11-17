@@ -67,3 +67,8 @@ export function clearSession() {
 export function ehCargoRecepcao(cargo) {
   return cargo === 'RECEPCIONISTA' || cargo === 'ADMIN'
 }
+
+// Só o administrador acessa Usuários e Exames (mesma regra do SecurityConfig: /api/admin/**).
+export function ehCargoAdmin(cargo) {
+  return cargo === 'ADMIN'
+}

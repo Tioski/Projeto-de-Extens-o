@@ -34,7 +34,7 @@ O sistema está sendo desenvolvido a partir das necessidades identificadas junto
 | Painel do paciente (contadores e próximos exames) | ✅ Implementada |
 | **Perfil** com todos os dados cadastrados | ✅ Implementada |
 | Solicitar novo exame em **4 etapas** com barra de progresso (exame → paciente → data e horário → confirmação) | ✅ Implementada |
-| Informar de **1 a 3** datas/horários desejados (só a 1ª é obrigatória) + observação | ✅ Implementada |
+| Escolher de **1 a 3** opções de **dia no calendário + horário livre** (mesma agenda do painel do admin; só a 1ª é obrigatória) + observação | ✅ Implementada |
 | Cadastrar dependentes (filho, cônjuge, pai/mãe, outro) e agendar para eles | ✅ Implementada |
 | Consultar solicitações, ver status e datas sugeridas | ✅ Implementada |
 | Cancelar uma solicitação | ✅ Implementada |
@@ -408,9 +408,10 @@ Ajustes necessários no back-end para ligar a flag: remover `@NotNull` de `dataO
 ### Assistente de agendamento (`pages/NovoExame/`)
 
 - Cada etapa é uma tela separada, no tamanho de um card grande; abaixo dos 4 passos há uma barra que avança 25% → 50% → 75% → 100%.
+- Na etapa 3 o paciente usa o mesmo `SeletorHorario` do painel: o calendário mostra os dias abertos (`GET /api/agenda/dias`) e, ao clicar em um dia, aparece a grade de horários (`GET /api/agenda/dias/{data}/horarios`) com horários livres, ocupados e passados. Dias fechados e horários indisponíveis não podem ser escolhidos, e um mesmo horário não se repete entre as opções. Ao reagendar, o horário confirmado do próprio paciente continua selecionável.
 - Escolher o exame leva à etapa 2; escolher o paciente (ou salvar um dependente) leva à etapa 3; **Continuar** valida as datas e leva à confirmação. Dá para voltar pelos botões ou clicando em um passo já alcançado.
 - **Reagendar** abre direto na etapa 3 (exame e paciente ficam fixos); **Agendar novamente** (exame concluído) abre na etapa 3 com exame e paciente pré-selecionados.
-- **Tela branca ao digitar a data (corrigido):** um ano com 5+ dígitos gerava uma data inválida e derrubava a árvore do React. Agora o campo limita o ano a 4 dígitos (`max`), a leitura da data é segura (`lerDataHoraLocal`) e há um `ErrorBoundary` global como rede de segurança.
+- **Tela branca ao digitar a data (corrigido):** o fluxo do paciente não usa mais `datetime-local`; a data e o horário vêm do calendário/grade da agenda, e há um `ErrorBoundary` global como rede de segurança.
 
 ### Formato de erro
 

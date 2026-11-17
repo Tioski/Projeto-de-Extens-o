@@ -180,36 +180,15 @@
   grid-column: 1 / -1;
 }
 
-/* ---------- Datas ---------- */
-.datas-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 1rem;
+/* ---------- Datas (calendário e horários: estilos em components/Agenda.css) ---------- */
+.opcao-limpar {
+  margin: -0.4rem 0 0.75rem;
+  font-size: 0.8rem;
 }
 
-.field-linha {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.tag-obrigatoria,
-.tag-opcional {
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.tag-obrigatoria {
-  color: var(--color-primary);
-}
-
-.tag-opcional {
-  color: var(--color-slate-600);
-}
-
-.link-limpar {
-  font-size: 0.75rem;
+/* No assistente o calendário fica numa coluna de largura fixa (sem isso os dias viram quadrados enormes) */
+.etapa-card .agd-seletor {
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
 }
 
 /* ---------- Resumo ---------- */
@@ -248,13 +227,11 @@
   text-align: right;
 }
 
-@media (max-width: 900px) {
-  .datas-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 760px) {
+  .etapa-card .agd-seletor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .progresso {
     scroll-margin-top: 11rem; /* header fica mais alto no celular */
   }

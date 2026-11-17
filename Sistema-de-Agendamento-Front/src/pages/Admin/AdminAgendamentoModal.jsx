@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Icone from '../../components/Icone'
+import SeletorHorario from '../../components/SeletorHorario'
 import { recepcaoApi } from '../../services/api'
-import { agoraParaInput, formatarDataHora, infoStatus, inputParaIso } from '../../utils/agendamento'
+import { formatarDataHora, infoStatus, inputParaIso } from '../../utils/agendamento'
 import { dataPassou } from '../../utils/admin'
 import { formatarCpf, formatarTelefone } from '../../utils/mascaras'
 
@@ -22,8 +23,8 @@ function Dado({ rotulo, valor, largo = false }) {
 
 /**
  * Detalhes de um agendamento + ações da recepção:
- * PENDENTE   -> confirmar (data + consultório + observação), recusar ou cancelar
- * CONFIRMADO -> marcar como concluído ou cancelar
+ * PENDENTE   -> confirmar (data + consultório + observação) ou recusar (pendente não se cancela, só se recusa)
+ * CONFIRMADO -> marcar como concluído, remarcar ou cancelar
  */
 function AdminAgendamentoModal({ agendamento, modoInicial = 'detalhes', onFechar, onConcluido }) {
   const a = agendamento
@@ -251,11 +252,8 @@ function AdminAgendamentoModal({ agendamento, modoInicial = 'detalhes', onFechar
                   <button type="button" className="btn btn-secondary" disabled={enviando} onClick={() => { setModo('remarcar'); setErro('') }}>
                     Confirmar em outra data
                   </button>
-                  <button type="button" className="btn btn-secondary" disabled={enviando} onClick={() => { setModo('recusar'); setErro('') }}>
+                  <button type="button" className="btn btn-danger" disabled={enviando} onClick={() => { setModo('recusar'); setErro('') }}>
                     Recusar
-                  </button>
-                  <button type="button" className="btn btn-danger" disabled={enviando} onClick={() => { setModo('cancelar'); setErro('') }}>
-                    Cancelar
                   </button>
                 </div>
               </form>
@@ -295,16 +293,15 @@ function AdminAgendamentoModal({ agendamento, modoInicial = 'detalhes', onFechar
               </p>
             )}
             <div className="adm-form-grid">
-              <div className="field">
-                <label htmlFor="adm-nova-data">Nova data e horário *</label>
-                <input
-                  id="adm-nova-data"
-                  type="datetime-local"
-                  min={agoraParaInput()}
+              <div className="field largo">
+                <label>
+                  Nova data e horário *{novaData && <> — <strong>{formatarDataHora(novaData)}</strong></>}
+                </label>
+                <SeletorHorario
                   value={novaData}
-                  onChange={(e) => setNovaData(e.target.value)}
+                  onChange={setNovaData}
+                  horarioAtual={a.dataConfirmada ?? ''}
                   disabled={enviando}
-                  autoFocus
                 />
               </div>
               <div className="field">

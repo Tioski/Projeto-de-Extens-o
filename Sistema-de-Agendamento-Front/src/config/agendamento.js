@@ -8,7 +8,3 @@
 //   VITE_BACKEND_DATAS_OPCIONAIS=true
 // e o front passa a enviar somente as datas informadas (as demais vão como null).
 export const BACKEND_ACEITA_DATAS_OPCIONAIS = import.meta.env.VITE_BACKEND_DATAS_OPCIONAIS === 'true'
-
-// Máximo aceito nos campos de data e hora. Com um limite de 4 dígitos no ano, o Chrome passa para o
-// campo da hora assim que o ano é completado (sem isso o ano aceita até 6 dígitos e engole o horário).
-export const DATA_HORA_MAXIMA_INPUT = '9999-12-31T23:59'

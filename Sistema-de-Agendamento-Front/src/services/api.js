@@ -56,6 +56,59 @@ export const agendamentoApi = {
   cancelar: (publicId) => request(`/api/agendamentos/${publicId}/cancelar`, { method: 'PATCH' }),
 }
 
+// Disponibilidade da agenda (qualquer usuário logado). Dia/hora são sempre no fuso America/Sao_Paulo.
+export const agendaApi = {
+  // GET /api/agenda/dias?inicio=AAAA-MM-DD&fim=AAAA-MM-DD (máx. 93 dias)
+  // -> [{ data, diaSemana, disponivel, horarioInicio, horarioFim, personalizado, motivo, totalHorarios, horariosLivres }]
+  listarDias: (inicio, fim) => request(`/api/agenda/dias?inicio=${inicio}&fim=${fim}`),
+  // GET /api/agenda/dias/{data}/horarios
+  // -> { data, disponivel, motivo, duracaoSlotMinutos, horarios: [{ inicio, fim, dataHora, situacao: LIVRE|OCUPADO|PASSADO }] }
+  listarHorarios: (data) => request(`/api/agenda/dias/${data}/horarios`),
+}
+
+// Gestão da disponibilidade (RECEPCIONISTA e ADMIN).
+export const recepcaoAgendaApi = {
+  // GET /api/recepcao/agenda/padrao -> { horarioInicio, horarioFim, duracaoSlotMinutos, horariosPorDia, atualizadoEm }
+  obterPadrao: () => request('/api/recepcao/agenda/padrao'),
+  // PUT /api/recepcao/agenda/padrao -> { horarioInicio: "HH:mm", horarioFim: "HH:mm", duracaoSlotMinutos }
+  atualizarPadrao: (dados) => request('/api/recepcao/agenda/padrao', { method: 'PUT', body: dados }),
+  // PUT /api/recepcao/agenda/dias/{data} -> { disponivel, horarioInicio?, horarioFim?, motivo? }
+  definirDia: (data, dados) => request(`/api/recepcao/agenda/dias/${data}`, { method: 'PUT', body: dados }),
+  // DELETE /api/recepcao/agenda/dias/{data} -> remove o ajuste (volta ao padrão)
+  restaurarDia: (data) => request(`/api/recepcao/agenda/dias/${data}`, { method: 'DELETE' }),
+}
+
+// Área do administrador (cargo ADMIN): usuários e catálogo de exames.
+export const adminUsuarioApi = {
+  // GET /api/admin/usuarios -> [UsuarioResponseDTO] (pacientes, recepcionistas e administradores)
+  listar: () => request('/api/admin/usuarios'),
+  // POST /api/admin/usuarios/recepcionistas -> 201 UsuarioResponseDTO (mesmo corpo do cadastro público)
+  cadastrarRecepcionista: (dados) =>
+    request('/api/admin/usuarios/recepcionistas', { method: 'POST', body: dados }),
+  // PUT /api/admin/usuarios/{publicId} -> { usuario, token }  (token só vem se o admin trocou o próprio e-mail)
+  atualizar: (publicId, dados) => request(`/api/admin/usuarios/${publicId}`, { method: 'PUT', body: dados }),
+  // PATCH /api/admin/usuarios/{publicId}/senha -> 204  body: { novaSenha }
+  alterarSenha: (publicId, novaSenha) =>
+    request(`/api/admin/usuarios/${publicId}/senha`, { method: 'PATCH', body: { novaSenha } }),
+  // POST /api/admin/usuarios/{publicId}/paciente-titular -> PacienteResponseDTO (cria o titular se não existir)
+  garantirPacienteTitular: (publicId) =>
+    request(`/api/admin/usuarios/${publicId}/paciente-titular`, { method: 'POST' }),
+}
+
+export const adminExameApi = {
+  // GET /api/admin/exames -> [{ publicId, nome, descricao, ativo }] (inclui os retirados da lista)
+  listar: () => request('/api/admin/exames'),
+  // POST /api/admin/exames -> 201  body: { nome, descricao? }
+  cadastrar: (dados) => request('/api/admin/exames', { method: 'POST', body: dados }),
+  // PUT /api/admin/exames/{publicId}  body: { nome, descricao? }
+  atualizar: (publicId, dados) => request(`/api/admin/exames/${publicId}`, { method: 'PUT', body: dados }),
+  // PATCH /api/admin/exames/{publicId}/status  body: { ativo }  (inativo some da tela de agendamento)
+  alterarStatus: (publicId, ativo) =>
+    request(`/api/admin/exames/${publicId}/status`, { method: 'PATCH', body: { ativo } }),
+  // DELETE /api/admin/exames/{publicId} -> 204 (falha se o exame já tem histórico de agendamentos)
+  excluir: (publicId) => request(`/api/admin/exames/${publicId}`, { method: 'DELETE' }),
+}
+
 // Área da recepção (cargos RECEPCIONISTA e ADMIN).
 export const recepcaoApi = {
   // GET /api/recepcao/agendamentos[?status=PENDENTE] -> [AgendamentoResponseDTO]

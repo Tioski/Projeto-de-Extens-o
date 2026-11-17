@@ -35,7 +35,7 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
   const [exameId, setExameId] = useState(base?.examePublicId ?? '')
   const [pacienteId, setPacienteId] = useState('')
   const [datas, setDatas] = useState(['', '', ''])
-  const [errosDatas, setErrosDatas] = useState({})
+  const [erroDatas, setErroDatas] = useState('')
   const [observacao, setObservacao] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [erroEnvio, setErroEnvio] = useState('')
@@ -111,33 +111,23 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
 
   const alterarData = (indice, valor) => {
     setDatas((atual) => atual.map((v, i) => (i === indice ? valor : v)))
-    setErrosDatas((atual) => {
-      if (!(indice in atual)) return atual
-      const resto = { ...atual }
-      delete resto[indice]
-      return resto
-    })
+    setErroDatas('')
   }
 
-  const continuarDatas = (incompletos) => {
-    const erros = validarOpcoesDeData(datas, incompletos)
-    setErrosDatas(erros)
-    if (Object.keys(erros).length > 0) {
-      // Leva a pessoa até o primeiro campo com problema.
-      const primeiro = Math.min(...Object.keys(erros).map(Number))
-      document.getElementById(`data-opcao-${primeiro + 1}`)?.focus()
-      return
-    }
+  const continuarDatas = () => {
+    const erro = validarOpcoesDeData(datas)
+    setErroDatas(erro)
+    if (erro) return
     irPara(4)
   }
 
   const confirmar = async () => {
     setErroEnvio('')
 
-    // As datas podem ter "vencido" enquanto a pessoa revisava; confere de novo antes de enviar.
-    const erros = validarOpcoesDeData(datas)
-    if (!exameId || !pacienteId || Object.keys(erros).length > 0) {
-      setErrosDatas(erros)
+    // Confere de novo antes de enviar (por exemplo, se a pessoa voltou etapas e limpou algo).
+    const erro = validarOpcoesDeData(datas)
+    if (!exameId || !pacienteId || erro) {
+      setErroDatas(erro)
       setEtapa(!exameId ? 1 : !pacienteId ? 2 : 3)
       return
     }
@@ -215,9 +205,10 @@ function NovoExamePage({ onNavigate = () => {}, params = null }) {
             <EtapaDataHorario
               contexto={contexto}
               datas={datas}
-              erros={errosDatas}
+              erro={erroDatas}
               observacao={observacao}
               reagendando={Boolean(reagendando)}
+              horarioAtual={reagendando?.dataConfirmada ?? ''}
               onAlterarData={alterarData}
               onAlterarObservacao={setObservacao}
               onVoltar={reagendando ? null : () => irPara(2)}

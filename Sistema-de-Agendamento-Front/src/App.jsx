@@ -11,21 +11,32 @@ import PainelPage from './pages/Painel/Painel'
 import PerfilPage from './pages/Perfil/Perfil'
 import AdminDashboardPage from './pages/Admin/AdminDashboard'
 import AdminAgendamentosPage from './pages/Admin/AdminAgendamentos'
+import AdminAgendaPage from './pages/Admin/AdminAgenda'
 import AdminNovoPacientePage from './pages/Admin/AdminNovoPaciente'
 import AdminPacientesPage from './pages/Admin/AdminPacientes'
-import { clearSession, ehCargoRecepcao, getSession, saveSession } from './services/session'
+import AdminUsuariosPage from './pages/Admin/AdminUsuarios'
+import AdminNovoRecepcionistaPage from './pages/Admin/AdminNovoRecepcionista'
+import AdminExamesPage from './pages/Admin/AdminExames'
+import { clearSession, ehCargoAdmin, ehCargoRecepcao, getSession, saveSession } from './services/session'
 
-// Telas da área administrativa (RECEPCIONISTA e ADMIN). Usam o próprio layout (menu lateral), sem Header/Footer.
-const PAGINAS_ADMIN = ['recepcao', 'recepcao-agendamentos', 'recepcao-pacientes', 'recepcao-novo-paciente']
+// Telas da recepção (RECEPCIONISTA e ADMIN) e telas só do ADMIN. Usam o próprio layout (menu lateral), sem Header/Footer.
+const PAGINAS_RECEPCAO = ['recepcao', 'recepcao-agendamentos', 'recepcao-agenda', 'recepcao-pacientes', 'recepcao-novo-paciente']
+const PAGINAS_SOMENTE_ADMIN = ['admin-usuarios', 'admin-novo-recepcionista', 'admin-exames']
+const PAGINAS_ADMIN = [...PAGINAS_RECEPCAO, ...PAGINAS_SOMENTE_ADMIN]
 const PAGINAS_PROTEGIDAS = ['painel', 'consultar-exames', 'novo-exame', 'perfil', ...PAGINAS_ADMIN]
 
 // Decide qual página realmente aparece, de acordo com a sessão:
 // - sem login, páginas protegidas levam ao login;
-// - equipe da recepção só vê a área administrativa;
+// - recepcionista só vê as telas da recepção;
+// - administrador vê as mesmas telas, mas "Pacientes" vira "Usuários" e ainda tem "Exames";
 // - paciente nunca vê a área administrativa.
 function resolverPagina(pagina, session) {
   if (!session) return PAGINAS_PROTEGIDAS.includes(pagina) ? 'login' : pagina
-  if (ehCargoRecepcao(session.cargo)) return PAGINAS_ADMIN.includes(pagina) ? pagina : 'recepcao'
+  if (ehCargoAdmin(session.cargo)) {
+    if (pagina === 'recepcao-pacientes') return 'admin-usuarios'
+    return PAGINAS_ADMIN.includes(pagina) ? pagina : 'recepcao'
+  }
+  if (ehCargoRecepcao(session.cargo)) return PAGINAS_RECEPCAO.includes(pagina) ? pagina : 'recepcao'
   return PAGINAS_ADMIN.includes(pagina) ? 'painel' : pagina
 }
 
@@ -85,7 +96,13 @@ function App() {
 
   const page = resolverPagina(currentPage, session)
   const ehAdmin = PAGINAS_ADMIN.includes(page)
-  const propsAdmin = { session, currentPage: page, onNavigate: navegar, onLogout: handleLogout }
+  const propsAdmin = {
+    session,
+    currentPage: page,
+    onNavigate: navegar,
+    onLogout: handleLogout,
+    onSessaoAtualizada: atualizarSessao,
+  }
 
   const renderPage = () => {
     switch (page) {
@@ -101,10 +118,18 @@ function App() {
         return <AdminDashboardPage {...propsAdmin} />
       case 'recepcao-agendamentos':
         return <AdminAgendamentosPage {...propsAdmin} />
+      case 'recepcao-agenda':
+        return <AdminAgendaPage {...propsAdmin} />
       case 'recepcao-pacientes':
         return <AdminPacientesPage {...propsAdmin} />
       case 'recepcao-novo-paciente':
         return <AdminNovoPacientePage {...propsAdmin} />
+      case 'admin-usuarios':
+        return <AdminUsuariosPage {...propsAdmin} />
+      case 'admin-novo-recepcionista':
+        return <AdminNovoRecepcionistaPage {...propsAdmin} />
+      case 'admin-exames':
+        return <AdminExamesPage {...propsAdmin} />
       case 'painel':
         return <PainelPage onNavigate={navegar} />
       case 'perfil':

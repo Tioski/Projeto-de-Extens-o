@@ -16,6 +16,7 @@ import com.hospital.agendamento_api.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +27,18 @@ public class AgendamentoService {
         private final PacienteRepository pacienteRepository;
         private final UsuarioRepository usuarioRepository;
         private final ExameRepository exameRepository;
+        private final AgendaService agendaService;
 
         public AgendamentoService(AgendamentoRepository agendamentoRepository,
                         PacienteRepository pacienteRepository,
                         UsuarioRepository usuarioRepository,
-                        ExameRepository exameRepository) {
+                        ExameRepository exameRepository,
+                        AgendaService agendaService) {
                 this.agendamentoRepository = agendamentoRepository;
                 this.pacienteRepository = pacienteRepository;
                 this.usuarioRepository = usuarioRepository;
                 this.exameRepository = exameRepository;
+                this.agendaService = agendaService;
         }
 
         @Transactional
@@ -76,6 +80,9 @@ public class AgendamentoService {
                                         "O paciente já possui uma solicitação pendente para este exame. " +
                                                         "Aguarde a análise da recepção ou cancele o agendamento atual para solicitar novas datas.");
                 }
+
+                // As 3 opções precisam ser horários de dias abertos e ainda livres (não confirmados para outro paciente)
+                validarOpcoesDeData(dto.dataOpcao1(), dto.dataOpcao2(), dto.dataOpcao3());
 
                 Agendamento agendamento = new Agendamento();
                 agendamento.setSolicitante(solicitante);
@@ -128,6 +135,9 @@ public class AgendamentoService {
                                         "O paciente já possui outra solicitação pendente para este exame. "
                                                         + "Aguarde a análise da recepção ou cancele-a antes de reagendar.");
                 }
+
+                // Validado depois de apagar o antigo: se ele estava CONFIRMADO, o horário dele já voltou a ficar livre
+                validarOpcoesDeData(dto.dataOpcao1(), dto.dataOpcao2(), dto.dataOpcao3());
 
                 Agendamento novo = new Agendamento();
                 novo.setSolicitante(solicitante);
@@ -191,6 +201,12 @@ public class AgendamentoService {
                 Agendamento atualizado = agendamentoRepository.save(agendamento);
 
                 return mapearParaDTO(atualizado);
+        }
+
+        private void validarOpcoesDeData(OffsetDateTime opcao1, OffsetDateTime opcao2, OffsetDateTime opcao3) {
+                agendaService.validarOpcaoDoPaciente(1, opcao1);
+                agendaService.validarOpcaoDoPaciente(2, opcao2);
+                agendaService.validarOpcaoDoPaciente(3, opcao3);
         }
 
         private AgendamentoResponseDTO mapearParaDTO(Agendamento a) {
