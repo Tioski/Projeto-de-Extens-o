@@ -284,9 +284,11 @@ Inclui testes unitários das regras da agenda (`RegrasAgendaTest`).
 
 Projeto de Extensão – ADS – IFSC Câmpus Canoinhas, em parceria com o Hospital Santa Cruz de Canoinhas.
 
-| Nome | Função | GitHub |
+| Nome |  | GitHub |
 |---|---|---|
-| _Nome_ | _Back-end / Front-end / ..._ | [@usuario](https://github.com/usuario) |
-| _Nome_ | _..._ | [@usuario](https://github.com/usuario) |
+| Matheus Victório Wormsbecker | [@Tioski](https://github.com/Tioski) |
+| Giovany Wittilich | [@GiovanyW](https://github.com/GiovanyW) |
+| Lucas Eduardo Karvat | [@Lucas-Eduardo-Karvat](https://github.com/Lucas-Eduardo-Karvat) |
+| Silvano Veiga Moreschi | [@SilvanoMoreschi](https://github.com/SilvanoMoreschi) |
 
-**Orientação:** _Nome do(a) professor(a)_
+**Orientação:** Carlos Rafael Guerber
